@@ -1,6 +1,9 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 // Loads an image in a surface.
@@ -281,11 +284,51 @@ void surface_to_medianfilter(SDL_Surface* surface)
 }
 
 
+int seuil_calcul(SDL_PixelFormat* format,SDL_Surface* surface,int width,int height,double crit)
+{
+	Uint8 sum_R;
+	Uint8 sum_G;
+	Uint8 sum_B;
+
+	Uint8 sum_square_R;
+	Uint8 sum_square_G;
+	Uint8 sum_square_B;
+
+	Uint8 r;
+	Uint8 g;
+	Uint8 b;
+	
+	Uint32* pixels=surface->pixels;
+
+	int pixel_count=width*height;
+
+	for(int i=0; i<pixel_count;i++)
+	{
+		SDL_GetRGB(pixels[i],format,&r,&g,&b);
+		sum_R+=r;
+		sum_G+=g;
+		sum_B+=b;
+		sum_square_R+=r*r;
+		sum_square_G+=g*g;
+		sum_square_B+=b*b;
+	}
+
+	double mean_R=(double)(sum_R/pixel_count);
+	double mean_G=(double)(sum_G/pixel_count);
+	double mean_B=(double)(sum_B/pixel_count);
+
+	double stdDev_R=(double)sqrt(((double)(sum_square_R)-(double)sum_R*(double)sum_R/pixel_count)/(pixel_count-1));
+	double stdDev_G=(double)sqrt(((double)(sum_square_G)-(double)sum_G*(double)sum_G/pixel_count)/(pixel_count-1));
+	double stdDev_B=(double)sqrt(((double)(sum_square_B)-(double)sum_B*(double)sum_B/pixel_count)/(pixel_count-1));
+
+	return (int)((mean_R+mean_G+mean_B)/3+ crit*(stdDev_R+stdDev_G+stdDev_B)/3);
+}
+
 Uint32 pixel_to_seuil_adaptatif(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width,int height)
 {
 	int block_size=3;
 	int half_block=block_size/2;
-	int seuil_crit=75;
+	int seuil_crit=seuil_calcul(format,surface,width,height,0.5);
 	int count=0;
 	
 	Uint8 R,G,B;
@@ -302,7 +345,7 @@ Uint32 pixel_to_seuil_adaptatif(SDL_PixelFormat* format,SDL_Surface* surface,int
 		{
 			if(i+x >= 0 && i+x < height && j+y >= 0 && j+y <width)
 			{
-				actual=pixel_to_grayscale(pixels[(i+x)*width+j+y],format);
+				actual=pixels[(i+x)*width+j+y];
 				SDL_GetRGB(actual,format,&r,&g,&b);
 				R+=r;
 				G+=g;
@@ -316,7 +359,7 @@ Uint32 pixel_to_seuil_adaptatif(SDL_PixelFormat* format,SDL_Surface* surface,int
 	int average_R=R/count;
 	int average_G=G/count;
 	int average_B=B/count;
-	actual=pixel_to_grayscale(pixels[i*width+j],format);
+	actual=pixels[i*width+j];
 	Uint8 actual_r,actual_g,actual_b;
 	SDL_GetRGB(actual,format,&actual_r,&actual_g,&actual_b);
 	int average=(actual_r+actual_g+actual_b)/3;
@@ -339,6 +382,8 @@ Uint32 pixel_to_seuil_adaptatif(SDL_PixelFormat* format,SDL_Surface* surface,int
 void surface_to_seuilfilter(SDL_Surface* surface)
 {
 	Uint32* pixels=surface->pixels;
+	
+	SDL_Surface* copie=surface;
 
 	SDL_PixelFormat* format=surface->format;
 
@@ -351,13 +396,127 @@ void surface_to_seuilfilter(SDL_Surface* surface)
 	{
 		for(int j=1;j<width-1;j++)
 		{
-			pixels[i*width+j]=pixel_to_seuil_adaptatif(format,surface,i,j,width,height);
+			pixels[i*width+j]=pixel_to_seuil_adaptatif(format,copie,i,j,width,height);
 		}
 	}
 
 	SDL_UnlockSurface(surface);
 }
 
+
+Uint32 pixel_to_lissage_filter(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width,int height)
+{
+        Uint32* pixels=surface->pixels;
+	
+	int Seuil_fort=100;
+	int Seuil_bas=85;
+
+        Uint32 actual=pixels[i*width+j];
+	Uint8 R,G,B;
+	SDL_GetRGB(actual,format,&R,&G,&B);
+	if(R==255)
+	{
+		return SDL_MapRGB(format,255,255,255);
+	}
+
+	Uint8 r,g,b;
+
+	actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j-1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+		return SDL_MapRGB(format,0,0,0);
+
+	
+     	actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+                return SDL_MapRGB(format,0,0,0);
+
+        
+	actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j+1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+  	        return SDL_MapRGB(format,0,0,0);
+
+
+     	actual=pixel_to_grayscale(pixels[(i)*surface->w+j-1],format);
+       	SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+               	return SDL_MapRGB(format,0,0,0);
+
+        
+	actual=pixel_to_grayscale(pixels[(i)*surface->w+j+1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+                return SDL_MapRGB(format,0,0,0);
+
+
+       	actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j-1],format);
+       	SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+		return SDL_MapRGB(format,0,0,0);
+
+
+	actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j],format);
+	SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+		return SDL_MapRGB(format,0,0,0);
+
+
+	actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j],format);
+	SDL_GetRGB(actual,format,&r,&g,&b);
+	if(r==0)
+		return SDL_MapRGB(format,0,0,0);
+	
+
+        return SDL_MapRGB(format,255,255,255);
+}
+
+//only use this filter when the image is only black and white (after the seuil filter) NOT FINISHED
+void surface_to_lissage_filter(SDL_Surface* surface)
+{
+	Uint32* input_pixels=surface->pixels;
+	
+	SDL_Surface* copie=surface;
+
+	SDL_PixelFormat* format=surface->format;
+
+	SDL_LockSurface(surface);
+	SDL_LockSurface(copie);
+
+	int width=surface->w;
+	int height=surface->h;
+
+	for(int i=1;i<height-1;i++)
+	{
+		for(int j=1;j<width-1;j++)
+		{
+			input_pixels[i*width+j]=pixel_to_lissage_filter(format,copie,i,j,width,height);
+		}
+	}
+
+	SDL_UnlockSurface(surface);
+	SDL_UnlockSurface(copie);
+}
+
+
+void surface_inversion(SDL_Surface* surface)
+{
+	Uint32* pixels=surface->pixels;
+	SDL_LockSurface(surface);
+	SDL_PixelFormat* format=surface->format;
+
+	Uint8 r,g,b;
+
+	for(int i=0;i<surface->h;i++)
+	{
+		for(int j=0;j<surface->w;j++)
+		{
+			SDL_GetRGB(pixels[i*surface->w+j],format,&r,&g,&b);
+			pixels[i*surface->w+j]=SDL_MapRGB(format,255-r,255-g,255-b);
+		}
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -379,13 +538,13 @@ int main(int argc, char** argv)
 	surface_to_grayscale(surface);
 
 	//Save greyscale image
-	IMG_SavePNG(surface, "test_greyscale.png");
+	//IMG_SavePNG(surface, "test_greyscale.png");
 
 	//With medianfilter
         surface_to_medianfilter(surface);
 
         //Save the surface with median filter
-        IMG_SavePNG(surface,"test_median.png");
+        //IMG_SavePNG(surface,"test_median.png");
 	
 	//With mediumFilter
 	surface_to_mediumfilter(surface);
@@ -404,6 +563,20 @@ int main(int argc, char** argv)
 
         //Save B & W image
         //IMG_SavePNG(surface,"test_B_&_W.png");
+	
+
+	//With lissage filter
+	surface_to_lissage_filter(surface);
+
+	//Save with lissage filter
+	IMG_SavePNG(surface,"test_lissage.png");
+
+	//Inversion
+	//surface_inversion(surface);
+
+	//Save Inversion
+	//IMG_SavePNG(surface,"test_inversion.png");
+
 
 	return EXIT_SUCCESS;
 }
