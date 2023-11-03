@@ -1,0 +1,153 @@
+#include <err.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
+// Loads an image in a surface.
+SDL_Surface* load_image(const char* path)
+{
+    SDL_Surface* surface = IMG_Load(path);
+    if (surface == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* surfaceRGB = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
+    if (surfaceRGB == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_FreeSurface(surface);
+    return surfaceRGB;
+}
+
+Uint8 median(Uint8 l[])
+{
+        int i,j,k;
+        for(i=1;i<9;i++)
+        {
+                k=l[i];
+                j=i-1;
+                while(j>=0 && l[j] > k)
+                {
+                        l[j+1]=l[j];
+                        j=j-1;
+                }
+                l[j+1]=k;
+        }
+        return l[4];
+}
+
+
+Uint32 pixel_to_medianfilter(SDL_PixelFormat* format, SDL_Surface* surface,int i, int j)
+{
+        Uint8 R[9];
+        Uint8 G[9];
+        Uint8 B[9];
+        Uint8 r,g,b;
+        Uint32* pixels=surface->pixels;
+
+        Uint32 actual=pixel_to_grayscale(pixels[i*surface->w+j],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[0]=r;
+        G[0]=g;
+        B[0]=b;
+
+        actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j-1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[1]=r;
+        G[1]=g;
+        B[1]=b;
+
+        actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[2]=r;
+        G[2]=g;
+        B[2]=b;
+
+        actual=pixel_to_grayscale(pixels[(i-1)*surface->w+j+1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[3]=r;
+        G[3]=g;
+        B[3]=b;
+
+        actual=pixel_to_grayscale(pixels[(i)*surface->w+j-1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[4]=r;
+        G[4]=g;
+        B[4]=b;
+
+        actual=pixel_to_grayscale(pixels[(i)*surface->w+j+1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[5]=r;
+        G[5]=g;
+        B[5]=b;
+	
+	actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j-1],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[6]=r;
+        G[6]=g;
+        B[6]=b;
+
+        actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[7]=r;
+        G[7]=g;
+        B[7]=b;
+
+        actual=pixel_to_grayscale(pixels[(i+1)*surface->w+j],format);
+        SDL_GetRGB(actual,format,&r,&g,&b);
+        R[8]=r;
+        G[8]=g;
+        B[8]=b;
+
+        Uint32 color=SDL_MapRGB(format,median(R),median(G),median(B));
+
+        return color;
+}
+
+
+void surface_to_medianfilter(SDL_Surface* surface)
+{
+        Uint32* pixels=surface->pixels;
+
+        SDL_PixelFormat* format=surface->format;
+
+        SDL_LockSurface(surface);
+
+        int width=surface->w;
+        int height=surface->h;
+
+        for(int i=1;i<height-1;i++)
+        {
+                for(int j=1;j<width-1;j++)
+                {
+                        pixels[i*width+j]=pixel_to_medianfilter(format,surface,i,j);
+                }
+        }
+
+        SDL_UnlockSurface(surface);
+}
+
+
+int main(int argc, char** argv)
+{
+        //Checks the number of arguments.
+        if (argc != 2)
+                errx(EXIT_FAILURE, "Usage: image-file");
+
+        //Create a surface from the colored image.
+        SDL_Surface* surface = load_image(argv[1]);
+        if (surface == NULL)
+        {
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+        }
+        //Convert the surface into greyscale
+        surface_to_medianfilter(surface);
+
+        //Save greyscale image
+        IMG_SavePNG(surface, "test_median.png");
+
+        return EXIT_SUCCESS;
+}
