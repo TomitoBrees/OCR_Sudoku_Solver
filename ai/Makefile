@@ -1,5 +1,5 @@
-BLASFLAGS = `pkg-config -cflags -libs openblas` -DBLAS_EXIST
-# SRC = sgemm.c
+# BLASFLAGS = `pkg-config -cflags -libs openblas` -DBLAS_EXIST
+SRC = sgemm.c
 
 CFLAGS = -lm -Wall -Wextra
 

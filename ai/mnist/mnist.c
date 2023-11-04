@@ -10,10 +10,10 @@ size_t mnist_test_dataset_size = -1;
 struct network_item* mnist_trainning_dataset = NULL;
 struct network_item* mnist_test_dataset = NULL;
 
-static const char train_labels_filename[] = "/train-labels.idx1-ubyte";
-static const char train_images_filename[] = "/train-images.idx3-ubyte";
-static const char test_labels_filename[] = "/t10k-labels.idx1-ubyte";
-static const char test_images_filename[] = "/t10k-images.idx3-ubyte";
+static const char train_labels_filename[] = "/train-labels-idx1-ubyte";
+static const char train_images_filename[] = "/train-images-idx3-ubyte";
+static const char test_labels_filename[] = "/t10k-labels-idx1-ubyte";
+static const char test_images_filename[] = "/t10k-images-idx3-ubyte";
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////   INTERNAL FILE LOADERS   ////////////////////////////
@@ -161,7 +161,7 @@ static void print_digit(NETWORK_NUM *pixels) {
 
 static int test_idx1() {
     const char* file = 
-        "C:\\Users\\Luca\\Desktop\\OCR\\ai\\mnist\\data\\train-labels.idx1-ubyte";
+        "mnist/data/train-labels.idx1-ubyte";
     unsigned char* labels;
     size_t count;
     if (mnist_load_idx1(file, &count, &labels) != 0) {
@@ -379,7 +379,7 @@ void mnist_unload() {
 }
 
 int mnist_test() {
-    int i = 2;
+    int i = 0;
     if (i == 0)
         return test_idx1();
     else if (i == 1)

@@ -386,14 +386,16 @@ int test_SGD() {
     network_new(&net, layers, sizeof(layers)/sizeof(size_t));
     network_fill_random(&net);
 
-    const size_t epochs_num = 100 ; // 100
+    const size_t epochs_num = 20 ; // 100
     const size_t mini_batch_size = 100; // 100
     const NETWORK_NUM eta = 3.0; // 1.0;
 
 
+    // network_SGD(&net, mnist_trainning_dataset, 60000, epochs_num, mini_batch_size,
+    //         eta, NULL, 0);
     network_SGD(&net, mnist_trainning_dataset, 60000, epochs_num, mini_batch_size,
-            eta, NULL, 0);
-    /*for (size_t i = 0; i < epochs_num; i++) {
+            eta, mnist_test_dataset, mnist_test_dataset_size);
+   /*for (size_t i = 0; i < epochs_num; i++) {
         network_update_mini_batch(&net, eta, mnist_trainning_dataset, 100);
         printf("score: %zu\n", network_evaluate(&net, mnist_trainning_dataset, 100));
     }*/
