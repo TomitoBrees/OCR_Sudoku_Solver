@@ -21,6 +21,19 @@ SDL_Surface* load_image(const char* path)
     return surfaceRGB;
 }
 
+//Grayscale conversion
+Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format)
+{
+    Uint8 r, g, b;
+
+    SDL_GetRGB(pixel_color, format, &r, &g, &b);
+
+    Uint8 average = 0.3 * r + 0.59 * g + 0.11 * b;
+
+    Uint32 color = SDL_MapRGB(format, average, average, average);
+    return color;
+}
+
 Uint8 median(Uint8 l[])
 {
         int i,j,k;

@@ -6,13 +6,26 @@ CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
 LDFLAGS =
 LDLIBS = `pkg-config --libs sdl2 SDL2_image`
 
-all: test
+all: grayscale B_W smoothing threshold median medium inversion
 
-SRC = test.c 
+SRC = grayscale.c B_W.c smoothing.c median.c medium.c inversion.c threshold.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
 
-test: test.o
+
+grayscale: grayscale.o
+
+smoothing: smoothing.o
+
+B_W: B_W.o
+
+threshold: threshold.o
+
+inversion: inversion.o
+
+median: median.o
+
+medium: medium.o
 
 .PHONY: clean
 

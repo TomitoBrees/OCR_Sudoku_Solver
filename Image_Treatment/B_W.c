@@ -28,7 +28,7 @@ Uint32 pixel_to_blackandwhite(Uint32 pixel_color, SDL_PixelFormat* format)
 
     SDL_GetRGB(pixel_color, format, &r, &g, &b);
 
-    if((r + g + b)/3 > 155)
+    if((r + g + b)/3 > 100)
     {
         Uint32 color = SDL_MapRGB(format, 255, 255, 255);
         return color;

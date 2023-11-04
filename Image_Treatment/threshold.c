@@ -21,56 +21,18 @@ SDL_Surface* load_image(const char* path)
     return surfaceRGB;
 }
 
-//Still in process
-int seuil_calcul(SDL_PixelFormat* format,SDL_Surface* surface,int width,int height,double crit)
-{
-        Uint8 sum_R;
-        Uint8 sum_G;
-        Uint8 sum_B;
-
-        Uint8 sum_square_R;
-        Uint8 sum_square_G;
-        Uint8 sum_square_B;
-
-        Uint8 r;
-        Uint8 g;
-        Uint8 b;
-
-        Uint32* pixels=surface->pixels;
-
-        int pixel_count=width*height;
-
-        for(int i=0; i<pixel_count;i++)
-        {
-                SDL_GetRGB(pixels[i],format,&r,&g,&b);
-                sum_R+=r;
-                sum_G+=g;
-                sum_B+=b;
-                sum_square_R+=r*r;
-                sum_square_G+=g*g;
-                sum_square_B+=b*b;
-        }
-
-        double mean_R=(double)(sum_R/pixel_count);
-        double mean_G=(double)(sum_G/pixel_count);
-        double mean_B=(double)(sum_B/pixel_count);
-
-        double stdDev_R=(double)sqrt(((double)(sum_square_R)-(double)sum_R*(double)sum_R/pixel_count)/(pixel_count-1));
-        double stdDev_G=(double)sqrt(((double)(sum_square_G)-(double)sum_G*(double)sum_G/pixel_count)/(pixel_count-1));
-        double stdDev_B=(double)sqrt(((double)(sum_square_B)-(double)sum_B*(double)sum_B/pixel_count)/(pixel_count-1));
-
-        return (int)((mean_R+mean_G+mean_B)/3+ crit*(stdDev_R+stdDev_G+stdDev_B)/3);
-}
 
 
 Uint32 pixel_to_adaptive_threshold(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width,int height)
 {
         int block_size=3;
         int half_block=block_size/2;
-        int seuil_crit=seuil_calcul(format,surface,width,height,0.5);
+        int seuil_crit=65;
         int count=0;
 
-        Uint8 R,G,B;
+        Uint8 R=0;
+	Uint8 G=0;
+	Uint8 B=0;
 
         Uint8 r,g,b;
 

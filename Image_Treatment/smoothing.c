@@ -21,12 +21,25 @@ SDL_Surface* load_image(const char* path)
     return surfaceRGB;
 }
 
+Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format)
+{
+    Uint8 r, g, b;
+
+    SDL_GetRGB(pixel_color, format, &r, &g, &b);
+
+    Uint8 average = 0.3 * r + 0.59 * g + 0.11 * b;
+
+    Uint32 color = SDL_MapRGB(format, average, average, average);
+    return color;
+}
+
+
 Uint32 pixel_to_smoothing_filter(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width,int height)
 {
         Uint32* pixels=surface->pixels;
 
-        int Seuil_fort=100;
-        int Seuil_bas=85;
+        //int Seuil_fort=100;
+        //int Seuil_bas=85;
 
         Uint32 actual=pixels[i*width+j];
         Uint8 R,G,B;
