@@ -472,6 +472,59 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 }
 
 
+void lineremoval(SDL_Surface* image, int width, int height,
+                 SDL_PixelFormat* format, Uint32* pixels,
+                 int i, int j)
+{
+    if (i < 0 || i >= width || j < 0 || j >= height)
+    {
+        return;
+    }
+
+    if (pixels[j * width + i] != 0) 
+    {
+        pixels[j * width + i] = SDL_MapRGB(format, 0, 0, 0);
+        lineremoval(image, width, height, format, pixels, i - 1, j - 1);
+        lineremoval(image, width, height, format, pixels, i, j - 1);
+        lineremoval(image, width, height, format, pixels, i + 1, j - 1);
+        lineremoval(image, width, height, format, pixels, i - 1, j);
+        lineremoval(image, width, height, format, pixels, i + 1, j);
+        lineremoval(image, width, height, format, pixels, i - 1, j + 1);
+        lineremoval(image, width, height, format, pixels, i, j + 1);
+        lineremoval(image, width, height, format, pixels, i + 1, j + 1);
+    }
+}
+
+
+void linedetection(SDL_Surface* image, int width, int height,
+                               SDL_PixelFormat* format, Uint32* pixels)
+{
+    lineremoval(image,width,height,format,pixels, 0, 0);
+    for(int i = 0; i < width; i++)
+    {
+        if (i == 0 || i == width-1)
+        {
+            for (int j = 0; j< height; j++)
+            {
+                if(pixels[j*width + i] != 0)
+                {
+                    lineremoval(image,width,height,format,pixels, i, j);
+                }
+            }
+        }
+        if(pixels[i] != 0)
+        {
+            lineremoval(image,width,height,format,pixels,i,0);
+        }
+        if(pixels[(height-1) *width + i] != 0)
+        {
+            lineremoval(image,width,height,format,pixels,i,pixels[(height-1) *width + i]);
+        }
+    }
+
+}
+
+
 void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
                                SDL_PixelFormat* format, Uint32* pixels)
 {
@@ -629,8 +682,13 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
             square.h = yStep;
             SDL_Surface* subImage = SDL_CreateRGBSurface(0, square.w, square.h, original->format->BitsPerPixel, original->format->Rmask, original->format->Gmask, original->format->Bmask, original->format->Amask);
 
+            
+
 
             SDL_BlitSurface(original, &square, subImage, NULL);
+
+            linedetection(subImage, square.w, square.h,
+                               format, (Uint32*)subImage->pixels);
 
             char filename[100];
 
@@ -661,6 +719,10 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     SDL_SaveBMP(subImage, "PICTURES/EXTRACTED GRID.bmp");
 }
+
+
+
+
 
 
 
@@ -716,7 +778,7 @@ int main(int argc, char** argv)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window = SDL_CreateWindow("EdgeDetection", 0, 0, 400,400,
+    SDL_Window* window = SDL_CreateWindow("Hough Transform", 0, 0, 400,400,
             SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (window == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
