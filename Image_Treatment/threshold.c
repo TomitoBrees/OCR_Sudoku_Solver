@@ -27,7 +27,7 @@ Uint32 pixel_to_adaptive_threshold(SDL_PixelFormat* format,SDL_Surface* surface,
 {
         int block_size=3;
         int half_block=block_size/2;
-        int seuil_crit=65;
+        int seuil_crit=55;
         int count=0;
 
         Uint8 R=0;
