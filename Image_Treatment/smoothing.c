@@ -34,7 +34,7 @@ Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format)
 }
 
 
-Uint32 pixel_to_smoothing_filter(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width,int height)
+Uint32 pixel_to_smoothing_filter(SDL_PixelFormat* format,SDL_Surface* surface,int i,int j,int width)
 {
         Uint32* pixels=surface->pixels;
 
@@ -121,7 +121,7 @@ void surface_to_smoothing_filter(SDL_Surface* surface)
         {
                 for(int j=1;j<width-1;j++)
                 {
-                        input_pixels[i*width+j]=pixel_to_smoothing_filter(format,copie,i,j,width,height);
+                        input_pixels[i*width+j]=pixel_to_smoothing_filter(format,copie,i,j,width);
                 }
         }
 
