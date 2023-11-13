@@ -438,8 +438,33 @@ int test_SGD_xor() {
     return 0;
 }
 
+int test_ilan() {
+    if (mnist_init("mnist/data") != 0) {
+        printf("unable to load mnist dataset\n");
+        return 1;
+    }
+
+    size_t layers[] = {784, 30, 10};
+    struct network net;
+    network_new(&net, layers, sizeof(layers)/sizeof(size_t));
+    network_fill_random(&net);
+
+    for (size_t i = 0; i < net.num_layers - 1; i++) {
+        DARR(net.weights[i], net.layers[i] * net.layers[i+1]);
+        printf("\n");
+    }
+
+    printf("\n\n\n\n");
+    for (size_t i = 0; i < net.num_layers - 1; i++) {
+        DARR(net.biases[i], net.layers[i+1]);
+        printf("\n");
+    }
+
+}
+
 int main() {
-    srand(time(NULL));
+    //srand(time(NULL));
+    srand(0);
 
     printf("Hello world!\n");
     int res;
@@ -456,9 +481,10 @@ int main() {
     // return test_xor();
     // return test_xor_backprop();
 
-    res = test_SGD();
+    // res = test_SGD();
     // return test_SGD_xor();
 
+    res = test_ilan();
 
     double time2 = clock();
     printf("time elapsed: %f s\n\n", (time2 - time1) / CLOCKS_PER_SEC);
