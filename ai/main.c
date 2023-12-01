@@ -459,7 +459,7 @@ int test_ilan() {
         DARR(net.biases[i], net.layers[i+1]);
         printf("\n");
     }
-
+    return 0;
 }
 
 int main() {

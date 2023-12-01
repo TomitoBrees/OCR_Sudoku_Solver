@@ -96,17 +96,17 @@ int network_new_from_file(struct network *net, const char *filename) {
                                   // so the compiler cannot calculate the
                                   // address offset
 
-    fscanf(f, "%zu", &num_layers);
+    int e = fscanf(f, "%zu", &num_layers);
     // printf("num_layers: %zu\n", num_layers);
-    if (num_layers < 1)
+    if (e < 0 || num_layers < 1)
         goto err;
     // return 1;
     size_t *layers = malloc(num_layers * sizeof(size_t));
     size_t l_value;
     for (size_t i = 0; i < num_layers; i++) {
         l_value = -1;
-        fscanf(f, " %zu", &l_value);
-        if (l_value < 1)
+        e = fscanf(f, " %zu", &l_value);
+        if (e < 0 || l_value < 1)
             goto err;
         layers[i] = l_value;
     }

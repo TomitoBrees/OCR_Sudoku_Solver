@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../network.h"
+#include "network.h"
 
 #define XOR_DEFAULT_INPUT_SIZE 4
 

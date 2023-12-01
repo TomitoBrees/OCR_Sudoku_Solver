@@ -1,23 +1,6 @@
 #include <err.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <math.h>
-
-
-// Loads an image in a surface.
-SDL_Surface* load_image(const char* path)
-{
-    SDL_Surface* surface = IMG_Load(path);
-    if (surface == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-    SDL_Surface* surfaceRGB = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
-    if (surfaceRGB == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-    SDL_FreeSurface(surface);
-    return surfaceRGB;
-}
+//#include <math.h>
 
 //Rotate the image to 90 degrees
 SDL_Surface* rotation90(SDL_Surface* surface)

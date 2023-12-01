@@ -1,8 +1,10 @@
 #include "stdlib.h"
 #include "stdio.h"
-//#include "cross_err.h"
+#include "cross_err.h"
 
 #include "edge_detection.h"
+#include "rotate.h"
+#include "network.h"
 
 int test() {
     int a = 5;
@@ -12,5 +14,6 @@ int test() {
 }
 
 int main() {
-    return test();
+    int i = test();
+    edgeDetection(NULL, NULL);
 }
