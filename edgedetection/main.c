@@ -3,9 +3,9 @@
 #include "err.h"
 
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
+//#include "SDL2/SDL_image.h"
 
-#include "edge_detection.h"
+#include "include/edge_detection.h"
 
 void draw(SDL_Renderer* renderer, SDL_Texture* texture)
 {

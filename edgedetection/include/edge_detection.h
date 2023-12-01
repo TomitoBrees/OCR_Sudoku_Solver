@@ -1,5 +1,5 @@
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
+//#include "SDL2/SDL_image.h"
 
 void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat* format,
                            int sobelX[3][3], int sobelY[3][3],

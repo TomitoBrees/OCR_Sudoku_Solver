@@ -1,14 +1,14 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
-LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lm
+CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2`
+LDLIBS = `pkg-config --libs sdl2` -lm
 
-all: main
-
-SRC = edge_detection.c main.c
+SRC = main.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
+
+include inc.mk
 
 ${EXE}: ${OBJ}
 

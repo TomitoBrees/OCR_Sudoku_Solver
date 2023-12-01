@@ -1,8 +1,13 @@
-include ../custom_err/err.mk
+CC:=gcc
+SRC:=test.c
+OBJ:=${SRC:.c=.o}
+
+include ../edgedetection/inc.mk
+
 
 all: test
 
-test: test.c
+test: ${OBJ}
 
 clean:
-	rm *.o *.exe
+	rm *.o test

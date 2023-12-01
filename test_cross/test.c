@@ -1,8 +1,8 @@
 #include "stdlib.h"
 #include "stdio.h"
-#include "cross_err.h"
+//#include "cross_err.h"
 
-
+#include "edge_detection.h"
 
 int test() {
     int a = 5;
