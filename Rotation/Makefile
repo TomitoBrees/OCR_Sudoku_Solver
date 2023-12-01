@@ -1,18 +1,16 @@
 # Makefile
 
 CC = gcc
-CPPFLAGS =
 CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
-LDFLAGS =
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lm
 
-all: rotate
+all: main
 
-SRC = rotate.c
+SRC = rotate.c main.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
 
-rotate: rotate.o
+${EXE}: ${OBJ}
 
 .PHONY: clean
 

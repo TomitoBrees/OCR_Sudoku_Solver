@@ -5,9 +5,80 @@
 #include <stdlib.h>
 #include <math.h>
 
+
+void draw(SDL_Renderer* renderer, SDL_Texture* texture)
+{
+    SDL_RenderCopy(renderer,texture,NULL, NULL);
+    SDL_RenderPresent(renderer); 
+}
+
+void event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* cannyTexture)
+{
+    SDL_Event event;
+    SDL_Texture* t = colored;
+    draw(renderer, t);
+
+
+    while (1)
+    {
+        SDL_WaitEvent(&event);
+
+        switch (event.type)
+        {
+            // If the "quit" button is pushed, ends the event loop.
+            case SDL_QUIT:
+                return;
+
+            // If the window is resized, updates and redraws the diagonals.
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+                {
+                    draw(renderer, t);
+                }
+                break;
+            case SDL_KEYDOWN:
+                if (t == colored)
+                {
+                    t = cannyTexture;
+                    draw(renderer, t);
+
+                }
+                else
+                {
+                    t = colored;
+                    draw(renderer, t);
+
+                }
+                break;
+
+        }
+    }
+}
+
+
+SDL_Surface* load_image(const char* path)
+{
+    SDL_Surface* surface = IMG_Load(path);
+    if (!surface)
+    {
+        errx(EXIT_FAILURE, "INIT SURFACE ERROR: %s", IMG_GetError());
+    }
+    SDL_Surface* new_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
+    SDL_FreeSurface(surface);
+    if (!new_surface)
+    {
+        errx(EXIT_FAILURE, "RGB SURFACE ERROR: %s", SDL_GetError());
+    }
+    return new_surface;
+
+}
+
+
+
 void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat* format, 
                            int sobelX[3][3], int sobelY[3][3], 
                            Uint32 magnitudes[width*height], Uint32 angles[width*height])
+
 {
     for (int y = 1; y < height - 1; y++) 
     {
@@ -15,6 +86,7 @@ void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat
         {
             int gx = 0;
             int gy = 0;
+            
             for (int j = -1; j <= 1; j++) 
             {
                 for (int i = -1; i <= 1; i++) 
@@ -24,6 +96,7 @@ void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat
 
                     gx += r * sobelX[i + 1][j + 1];
                     gy += r * sobelY[i + 1][j + 1]; 
+
                 }
             }
 
@@ -626,9 +699,12 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
             SDL_Log("Failed to save the subimage: %s\n", SDL_GetError());
             }
             i++;
+
         }
-        // i++;
+        i++;
+
     }
+
 
     SDL_Rect square;
     square.x = (int)intersection[0].x;
@@ -640,11 +716,19 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     SDL_BlitSurface(original, &square, subImage, NULL);
 
+
     SDL_SaveBMP(subImage, "PICTURES/EXTRACTED GRID.bmp");
 }
 
+
+
+
+
+
+
 void edgeDetection(SDL_Surface* image, SDL_Surface* original) 
 {
+    
     int sobelX[3][3] = { { -1, 0, 1 }, 
                          { -2, 0, 2 }, 
                          { -1, 0, 1 } }; // Sobel Matrix for X convolution
@@ -653,11 +737,13 @@ void edgeDetection(SDL_Surface* image, SDL_Surface* original)
                          {  0,  0,  0 }, 
                          {  1,  2,  1 } }; // Sobel Matrix for Y convolution
 
-    int height = image->h;
+
+    int height = image->h; 
     int width = image->w;
 
     SDL_PixelFormat* format = image->format; // Common format used everywhere
 
+   
     Uint32* pixels = (Uint32*)image->pixels; // Pixels of the surface
 
     Uint32 magnitudes[width*height]; // Gradient obtained with Sobel
@@ -679,3 +765,45 @@ void edgeDetection(SDL_Surface* image, SDL_Surface* original)
     SDL_UnlockSurface(image);
 }
 
+
+
+
+
+int main(int argc, char** argv)
+{
+
+    if (argc != 2)
+        errx(EXIT_FAILURE, "Usage: image-file");
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Window* window = SDL_CreateWindow("Hough Transform", 0, 0, 400,400,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if (window == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+
+    SDL_Surface* surface = load_image(argv[1]);
+    SDL_Surface* original_surface = load_image(argv[1]);
+
+    SDL_SetWindowSize(window,surface->w,surface->h);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,surface);
+    edgeDetection(surface,original_surface);
+    SDL_Texture* cannyTexture = SDL_CreateTextureFromSurface(renderer,surface);
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(original_surface);
+    event_loop(renderer,texture,cannyTexture);
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyTexture(cannyTexture);
+    SDL_Quit();
+
+
+    return EXIT_SUCCESS;
+}
