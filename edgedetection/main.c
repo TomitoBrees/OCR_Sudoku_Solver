@@ -138,6 +138,8 @@ SDL_Texture ** test(SDL_Renderer *renderer, SDL_Surface *image, size_t *count) {
     houghTransform(height, width, image->pixels, image->format);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
 
+    findAndExtractGridSquares(original, width, height, image->format, image->pixels);
+
     return textures;
 }
 

@@ -1,8 +1,8 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2`
-LDLIBS = `pkg-config --libs sdl2` -lm
+CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags SDL2_image`
+LDLIBS = -lm `pkg-config --libs SDL2_image`
 
 SRC = main.c
 OBJ = ${SRC:.c=.o}
@@ -12,10 +12,13 @@ include inc.mk
 
 ${EXE}: ${OBJ}
 
-.PHONY: clean
+.PHONY: clean clean_all
 
 clean:
 	${RM} ${OBJ}
 	${RM} ${EXE}
+
+clean_all: clean
+	${RM} -r PICTURES/*
 
 # END

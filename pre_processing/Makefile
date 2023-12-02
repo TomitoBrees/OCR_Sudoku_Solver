@@ -1,0 +1,20 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags SDL2_image`
+LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+
+SRC := main.c
+OBJ := ${SRC:.c=.o}
+EXE := ${SRC:.c=}
+
+include inc.mk
+
+${EXE}: ${OBJ}
+
+.PHONY: clean
+
+clean:
+	${RM} ${OBJ} ${EXE}
+
+clean-all: clean
+	${RM} -r output/*
+
