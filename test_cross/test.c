@@ -1,6 +1,6 @@
 #include "stdlib.h"
 #include "stdio.h"
-#include "cross_err.h"
+#include "err.h"
 
 #include "edge_detection.h"
 #include "rotate.h"

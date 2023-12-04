@@ -1,4 +1,4 @@
-ROTLIBPATH := $(shell git rev-parse --show-toplevel)/Rotation
+ROTLIBPATH := $(shell git rev-parse --show-toplevel)/rotate
 
 CFLAGS += `pkg-config --cflags sdl2` -I${ROTLIBPATH}/include
 LDLIBS += `pkg-config --libs sdl2`
