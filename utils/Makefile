@@ -1,8 +1,15 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -g `pkg-config --clfags sdl2 SDL2_image` -Iinclude/
-LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lm
+CC := gcc
+CFLAGS := -Wall -Wextra -g `pkg-config --cflags sdl2 SDL2_image` -Iinclude/
+LDLIBS := `pkg-config --libs sdl2 SDL2_image` -lm
 
-SRC = main.c sgemm.c
+SRC := main.c
+OBJ := ${SRC:.c=.o}
 
-main: $(SRC)
+include inc.mk
 
+main: $(OBJ)
+
+.PHONY: clean
+
+clean:
+	${RM} ${OBJ} main
