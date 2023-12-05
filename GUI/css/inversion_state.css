@@ -1,0 +1,24 @@
+/* FUNC THRESHOLD */
+
+#inversion {
+    background: #0e293f;
+    color: #7e57c2;
+    border: 2px solid #7e57c2;
+}
+
+#canny_edge {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#black_and_white, #median, #threshold {
+    background: #0e293f;
+    border: 2px solid #addb67;
+    color: #addb67;
+}
+
+#canny_edge:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}

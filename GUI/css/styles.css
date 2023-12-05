@@ -24,8 +24,7 @@ Green Color: #addb67
 }
 
 #solver_button:hover, #func_button:hover {
-    border: 3px solid #084d81;
-    color: #084d81;
+    border: 3px solid #FFFFFF;
 }
 
 
@@ -58,13 +57,13 @@ Green Color: #addb67
 
 /* FUNC MENU */
 
-#fun_pre_process, #fun_rotation, #fun_grid {
+#fun_pre_process, #fun_rotation {
     background: #0e293f;
     border: 2px solid #122d42;
     color: darkgray;
 }
 
-#fun_pre_process:hover, #fun_rotation:hover, #fun_grid:hover {
+#fun_pre_process:hover, #fun_rotation:hover {
     color: #FFFFFF;
     border: 2px solid #FFFFFF;
 }

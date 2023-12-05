@@ -43,21 +43,15 @@ Green Color: #addb67
     border: 2px solid #7e57c2;
 }
 
-#fun_rotation, #fun_grid {
+#fun_rotation, #black_and_white, #median, #threshold, #inversion, #canny_edge  {
     background: #0e293f;
     border: 2px solid #122d42;
     color: darkgray;
 }
 
-#fun_rotation:hover, #fun_grid:hover {
+#fun_rotation:hover{
     color: #FFFFFF;
     border: 2px solid #FFFFFF;
-}
-
-#black_and_white, #median, #threshold, #inversion, #canny_edge {
-    background: #0e293f;
-    border: 2px solid #122d42;
-    color: darkgray;
 }
 
 #black_and_white:hover, #median:hover, #threshold:hover, #inversion:hover, #canny_edge:hover {

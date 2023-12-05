@@ -100,6 +100,7 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_destroy(app->widgets.image);
         gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
         app->widgets.image = new_image;
+        app->widgets.image_surface = image_surface;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -295,7 +296,7 @@ void load_solver_window()
 
 /* FUNCTIONALITIES MENU */
 
-void func__pre_proccess_button_clicked(GtkWidget *widget, gpointer data)
+void func_pre_proccess_button_clicked(GtkWidget *widget, gpointer data)
 {
     Application *app = data;
 
@@ -306,15 +307,239 @@ void func__pre_proccess_button_clicked(GtkWidget *widget, gpointer data)
     // Apply the styles
     apply_css(app->widgets.pre_process_button, newCssProvider);
     apply_css(app->widgets.image_rotation_button, newCssProvider);
-    apply_css(app->widgets.detection_button, newCssProvider);
     apply_css(app->widgets.black_and_white_button, newCssProvider);
     apply_css(app->widgets.canny_button, newCssProvider);
     apply_css(app->widgets.median_button, newCssProvider);
     apply_css(app->widgets.threshold_button, newCssProvider);
     apply_css(app->widgets.inversion_button, newCssProvider);
 
-    //Show the pre-process widget
+    //Show the pre-process widget and hide the previous ones
     gtk_widget_show_all(app->widgets.pre_process_menu);
+
+    gtk_widget_hide(app->widgets.automatic_text);
+    gtk_widget_hide(app->widgets.automatic_button);
+    gtk_widget_hide(app->widgets.manual_text);
+    gtk_widget_hide(app->widgets.manual_holder);
+    gtk_widget_hide(app->widgets.manual_button);
+}
+
+void black_white_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    surface_to_grayscale(image_surface);
+    IMG_SavePNG(image_surface, "returned_images/image_grayscale.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_grayscale.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+    app->widgets.image_surface = image_surface;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/construction_state.css", NULL);
+
+    // Apply the styles
+    apply_css(app->widgets.black_and_white_button, newCssProvider);
+    apply_css(app->widgets.canny_button, newCssProvider);
+    apply_css(app->widgets.median_button, newCssProvider);
+    apply_css(app->widgets.threshold_button, newCssProvider);
+    apply_css(app->widgets.inversion_button, newCssProvider);
+
+    gtk_widget_show(app->widgets.image);
+}
+
+void median_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    surface_to_contrast(image_surface);
+    surface_to_medianfilter(image_surface);
+    surface_to_mediumfilter(image_surface);
+    IMG_SavePNG(image_surface, "returned_images/image_median.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_median.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+    app->widgets.image_surface = image_surface;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/detection_state.css", NULL);
+
+    // Apply the styles
+    apply_css(app->widgets.black_and_white_button, newCssProvider);
+    apply_css(app->widgets.canny_button, newCssProvider);
+    apply_css(app->widgets.median_button, newCssProvider);
+    apply_css(app->widgets.threshold_button, newCssProvider);
+    apply_css(app->widgets.inversion_button, newCssProvider);
+
+    gtk_widget_show(app->widgets.image);
+}
+
+void threshold_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    //surface_to_threshold_filter(image_surface);
+    //surface_to_smoothing_filter(image_surface);
+    IMG_SavePNG(image_surface, "returned_images/image_thresh.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_thresh.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+    app->widgets.image_surface = image_surface;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/ai_state.css", NULL);
+
+    // Apply the styles
+    apply_css(app->widgets.black_and_white_button, newCssProvider);
+    apply_css(app->widgets.canny_button, newCssProvider);
+    apply_css(app->widgets.median_button, newCssProvider);
+    apply_css(app->widgets.threshold_button, newCssProvider);
+    apply_css(app->widgets.inversion_button, newCssProvider);
+
+    gtk_widget_show(app->widgets.image);
+}
+
+void inversion_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    surface_inversion(image_surface);
+    IMG_SavePNG(image_surface, "returned_images/image_inversion.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_inversion.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+    app->widgets.image_surface = image_surface;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/inversion_state.css", NULL);
+
+    // Apply the styles
+    apply_css(app->widgets.black_and_white_button, newCssProvider);
+    apply_css(app->widgets.canny_button, newCssProvider);
+    apply_css(app->widgets.median_button, newCssProvider);
+    apply_css(app->widgets.threshold_button, newCssProvider);
+    apply_css(app->widgets.inversion_button, newCssProvider);
+
+    gtk_widget_show(app->widgets.image);
+}
+
+void canny_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/cany_edge_state.css", NULL);
+
+    // Apply the styles
+    apply_css(app->widgets.black_and_white_button, newCssProvider);
+    apply_css(app->widgets.canny_button, newCssProvider);
+    apply_css(app->widgets.median_button, newCssProvider);
+    apply_css(app->widgets.threshold_button, newCssProvider);
+    apply_css(app->widgets.inversion_button, newCssProvider);
+}
+
+
+void func_rotation_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    // Load new CSS file
+    GtkCssProvider *newCssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(newCssProvider, "css/rotation_state.css", NULL);
+
+    // Hide the previous widgets and show the rotation widgets
+    gtk_widget_hide(app->widgets.pre_process_menu);
+
+    gtk_widget_show(app->widgets.automatic_text);
+    gtk_widget_show(app->widgets.automatic_button);
+    gtk_widget_show(app->widgets.manual_text);
+    gtk_widget_show(app->widgets.manual_holder);
+    gtk_widget_show(app->widgets.manual_button);
+
+    // Apply the styles
+    apply_css(app->widgets.pre_process_button, newCssProvider);
+    apply_css(app->widgets.image_rotation_button, newCssProvider);
+    apply_css(app->widgets.manual_text, newCssProvider);
+    apply_css(app->widgets.automatic_text, newCssProvider);
+    apply_css(app->widgets.manual_button, newCssProvider);
+    apply_css(app->widgets.automatic_button, newCssProvider);
+}
+
+void manual_button_clicked(GtkWidget *widget, gpointer data)
+{
+    Application *app = data;
+
+    GtkWidget *holder = app->widgets.manual_holder;
+    const gchar *angle = gtk_entry_get_text(GTK_ENTRY(holder));
+
+    //Convert angle to int
+    int degree = 0;
+    int i = 0;
+    while (angle[i] != 0)
+    {
+        degree += angle[i] - 48;
+        degree *= 10;
+        i++;
+    }
+
+    degree /= 10;
+
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    SDL_Surface *rotated = rotation(image_surface, degree);
+    IMG_SavePNG(rotated, "returned_images/image_rotate.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_rotate.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+
+    gtk_widget_show(app->widgets.image);
 }
 
 void load_func_window()
@@ -344,8 +569,6 @@ void load_func_window()
 
     GtkWidget *pre_process_button = GTK_WIDGET(gtk_builder_get_object(builder, "fun_pre_process"));
     GtkWidget *image_rotation_button = GTK_WIDGET(gtk_builder_get_object(builder, "fun_rotation"));
-    GtkWidget *detection_button = GTK_WIDGET(gtk_builder_get_object(builder, "fun_grid"));
-
     GtkWidget *black_and_white_button = GTK_WIDGET(gtk_builder_get_object(builder, "black_and_white"));
     GtkWidget *threshold_button = GTK_WIDGET(gtk_builder_get_object(builder, "threshold"));
     GtkWidget *median_button = GTK_WIDGET(gtk_builder_get_object(builder, "median"));
@@ -371,7 +594,6 @@ void load_func_window()
     apply_css(image, cssProvider);
     apply_css(pre_process_button, cssProvider);
     apply_css(image_rotation_button, cssProvider);
-    apply_css(detection_button, cssProvider);
 
     //Create the app structure
     Application app =
@@ -382,7 +604,6 @@ void load_func_window()
                             {
                                     .main_window = main_window,
                                     .image = image,
-                                    .detection_button = detection_button,
                                     .image_rotation_button = image_rotation_button,
                                     .pre_process_button = pre_process_button,
                                     .image_box = image_box,
@@ -397,18 +618,22 @@ void load_func_window()
                                     .median_button = median_button,
                                     .threshold_button = threshold_button,
                                     .inversion_button = inversion_button,
-                                    .pre_process_menu = button_box
+                                    .pre_process_menu = button_box,
+                                    .image_surface = image_surface
                             },
             };
 
     //Connect the buttons
-    g_signal_connect(pre_process_button, "clicked", G_CALLBACK(func__pre_proccess_button_clicked), &app);
-    /*
-    g_signal_connect(image_rotation_button, "clicked", G_CALLBACK(rotation_button_clicked), &app);
-    g_signal_connect(detection_button, "clicked", G_CALLBACK(detection_button_clicked), &app);
-    g_signal_connect(ai_button, "clicked", G_CALLBACK(ai_button_clicked), &app);
-    g_signal_connect(construction_button, "clicked", G_CALLBACK(construction_button_clicked), &app);
-     */
+    g_signal_connect(pre_process_button, "clicked", G_CALLBACK(func_pre_proccess_button_clicked), &app);
+    g_signal_connect(image_rotation_button, "clicked", G_CALLBACK(func_rotation_button_clicked), &app);
+
+    g_signal_connect(black_and_white_button, "clicked", G_CALLBACK(black_white_clicked), &app);
+    g_signal_connect(median_button, "clicked", G_CALLBACK(median_button_clicked), &app);
+    g_signal_connect(threshold_button, "clicked", G_CALLBACK(threshold_button_clicked), &app);
+    g_signal_connect(inversion_button, "clicked", G_CALLBACK(inversion_button_clicked), &app);
+    g_signal_connect(canny_button, "clicked", G_CALLBACK(canny_button_clicked), &app);
+
+    g_signal_connect(manual_button, "clicked", G_CALLBACK(manual_button_clicked), &app);
 
     // Show the main window
     gtk_widget_show_all(main_window);
