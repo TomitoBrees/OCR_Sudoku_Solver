@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="main_window">
+    <property name="name">main_window</property>
+    <property name="width-request">1200</property>
+    <property name="height-request">800</property>
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">OCR</property>
+    <property name="window-position">center</property>
+    <child>
+      <object class="GtkFixed" id="fixed">
+        <property name="name">fixed</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkBox" id="button_box">
+            <property name="name">button_box</property>
+            <property name="width-request">240</property>
+            <property name="height-request">775</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">40</property>
+            <child>
+              <object class="GtkButton" id="black_and_white">
+                <property name="name">black_and_white</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel" id="pre_process_text">
+                    <property name="name">pre_process_text</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Black &amp; White</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="median">
+                <property name="name">median</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel" id="rotation_text">
+                    <property name="name">rotation_text</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Median &amp; Medium</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="threshold">
+                <property name="name">threshold</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel" id="detection_text">
+                    <property name="name">detection_text</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Adaptive Threshold</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="inversion">
+                <property name="name">inversion</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel" id="ai_text">
+                    <property name="name">ai_text</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Inversion</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="canny_edge">
+                <property name="name">canny_edge</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel" id="canny_edge_text">
+                    <property name="name">canny_edge_text</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Canny edge</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">945</property>
+            <property name="y">15</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="image_box">
+            <property name="name">image_box</property>
+            <property name="width-request">900</property>
+            <property name="height-request">679</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="x">15</property>
+            <property name="y">109</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="button_selectors_box">
+            <property name="name">button_selectors_box</property>
+            <property name="width-request">900</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">28</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <object class="GtkButton" id="fun_pre_process">
+                <property name="name">fun_pre_process</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Pre - Processing</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="fun_rotation">
+                <property name="name">fun_rotation</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Rotation</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="fun_grid">
+                <property name="name">fun_grid</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Grid - Detection</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">15</property>
+            <property name="y">15</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="manual_text">
+            <property name="name">manual_text</property>
+            <property name="width-request">250</property>
+            <property name="height-request">69</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-bottom">91</property>
+            <property name="label" translatable="yes">Manual</property>
+            <attributes>
+              <attribute name="font-desc" value="Meera Bold Italic 30"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">940</property>
+            <property name="y">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="manual_holder">
+            <property name="name">manual_holder</property>
+            <property name="width-request">240</property>
+            <property name="height-request">42</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="xalign">0.5</property>
+            <property name="overwrite-mode">True</property>
+            <property name="placeholder-text" translatable="yes">Angle</property>
+            <property name="input-purpose">digits</property>
+          </object>
+          <packing>
+            <property name="x">945</property>
+            <property name="y">260</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="manual_button">
+            <property name="name">manual_button</property>
+            <property name="width-request">240</property>
+            <property name="height-request">42</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Apply</property>
+                <attributes>
+                  <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">945</property>
+            <property name="y">310</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="automatic_button">
+            <property name="name">automatic_button</property>
+            <property name="width-request">240</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Apply</property>
+                <attributes>
+                  <attribute name="font-desc" value="Meera Bold Italic 20"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">945</property>
+            <property name="y">489</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="automatic_text">
+            <property name="name">automatic_text</property>
+            <property name="width-request">250</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-bottom">81</property>
+            <property name="label" translatable="yes">Automatic</property>
+            <attributes>
+              <attribute name="font-desc" value="Meera Bold Italic 30"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">940</property>
+            <property name="y">424</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

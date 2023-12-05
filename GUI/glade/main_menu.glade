@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="main_window">
+    <property name="name">main_window</property>
+    <property name="width-request">1200</property>
+    <property name="height-request">800</property>
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">OCR</property>
+    <property name="window-position">center</property>
+    <child>
+      <object class="GtkFixed" id="fixed">
+        <property name="name">fixed</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkLabel" id="ocr_text">
+            <property name="name">ocr_text</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">OCR Sudoku Solver</property>
+            <property name="justify">fill</property>
+            <property name="width-chars">160</property>
+            <attributes>
+              <attribute name="font-desc" value="Meera Bold Italic 50"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="width-request">1280</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-start">40</property>
+            <property name="margin-end">40</property>
+            <property name="spacing">47</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <object class="GtkButton" id="solver_button">
+                <property name="name">solver_button</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Sudoku Solver</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 30"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="func_button">
+                <property name="name">func_button</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Individual Functionalities</property>
+                    <property name="single-line-mode">True</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Meera Bold Italic 30"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="y">370</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="authors_text">
+            <property name="name">authors_text</property>
+            <property name="width-request">100</property>
+            <property name="height-request">80</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">by Tom L'Hotellier, Gaspard Jolly, Robin Paulik, Luca Sarrubi</property>
+            <property name="justify">fill</property>
+            <property name="width-chars">160</property>
+            <attributes>
+              <attribute name="font-desc" value="Meera Italic 15"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">640</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,0 +1,42 @@
+/*
+Green Color: #addb67
+ */
+
+/* SOLVER MENU */
+
+#main_title {
+    color: #FFFFFF;
+}
+
+#sudoku_image {
+    border: 2px solid #FFFFFF;
+}
+
+#save_button
+{
+    border: 2px solid #7e57c2;
+    background-color: #0e293f;
+}
+
+#ai_button {
+    background: #0e293f;
+    color: #7e57c2;
+    border: 2px solid #7e57c2;
+}
+
+#pre_process_button, #detection_button, #image_rotation_button {
+    background: #0e293f;
+    border: 2px solid #addb67;
+    color: #addb67;
+}
+
+#construction_button {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#image_rotation_button:hover, #detection_button:hover, #pre_process_button:hover, #construction_button:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}

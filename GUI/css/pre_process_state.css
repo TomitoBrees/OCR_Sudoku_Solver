@@ -1,0 +1,66 @@
+/*
+Green Color: #addb67
+ */
+
+/* SOLVER MENU */
+
+#main_title {
+    color: #FFFFFF;
+}
+
+#sudoku_image {
+    border: 2px solid #FFFFFF;
+}
+
+#save_button
+{
+    border: 2px solid #7e57c2;
+    background-color: #0e293f;
+}
+
+#pre_process_button {
+    background: #0e293f;
+    color: #7e57c2;
+    border: 2px solid #7e57c2;
+}
+
+#image_rotation_button, #detection_button, #ai_button, #construction_button {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#image_rotation_button:hover, #detection_button:hover, #ai_button:hover, #construction_button:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}
+
+/* FUNC MENU */
+
+#fun_pre_process {
+    background: #0e293f;
+    color: #7e57c2;
+    border: 2px solid #7e57c2;
+}
+
+#fun_rotation, #fun_grid {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#fun_rotation:hover, #fun_grid:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}
+
+#black_and_white, #median, #threshold, #inversion, #canny_edge {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#black_and_white:hover, #median:hover, #threshold:hover, #inversion:hover, #canny_edge:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}

@@ -1,0 +1,70 @@
+/*
+Green Color: #addb67
+ */
+
+#main_window {
+    background-color: #011627;
+}
+
+
+/* MAIN MENU */
+
+#ocr_text {
+    color: #7e57c2;
+}
+
+#authors_text {
+    color: #FFFFFF;
+}
+
+#solver_button, #func_button {
+    background: #0e293f;
+    border: 1px solid #7e57c2;
+    color: #FFFFFF;
+}
+
+#solver_button:hover, #func_button:hover {
+    border: 3px solid #084d81;
+    color: #084d81;
+}
+
+
+/* SOLVER MENU */
+
+#main_title {
+    color: #FFFFFF;
+}
+
+#sudoku_image {
+    border: 2px solid #FFFFFF;
+}
+
+#save_button
+{
+    border: 2px solid #7e57c2;
+    background-color: #0e293f;
+}
+
+#image_rotation_button, #detection_button, #ai_button, #construction_button , #pre_process_button {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#image_rotation_button:hover, #detection_button:hover, #ai_button:hover, #construction_button:hover, #pre_process_button:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}
+
+/* FUNC MENU */
+
+#fun_pre_process, #fun_rotation, #fun_grid {
+    background: #0e293f;
+    border: 2px solid #122d42;
+    color: darkgray;
+}
+
+#fun_pre_process:hover, #fun_rotation:hover, #fun_grid:hover {
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}
