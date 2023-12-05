@@ -12,6 +12,8 @@ void sgemm(const int M, const int N, const int K, const float alpha,
         const float *A, const float *B,
         const float beta, float *C);
 
+void dgemm(const int M, const int N, const int K, const double alpha,
+        const double *A, const double *B, const double beta, double *C);
 #endif
 
 /* M: number of rows of op(A)
@@ -39,6 +41,18 @@ static inline void gemm_n(const int M, const int N, const int K, const NETWORK_N
             0, C, N);
 #else
     sgemm(M, N, K, 1, A, B, 0, C);
+#endif
+}
+
+static inline void dgemm_n(const int M, const int N, const int K, const double *A,
+        const double *B, double *C) {
+#ifdef BLAS_EXIST
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, N, K, 1,
+            A, K,
+            B, N,
+            0, C, N);
+#else
+    dgemm(M, N, K, 1, A, B, 0, C);
 #endif
 }
 
