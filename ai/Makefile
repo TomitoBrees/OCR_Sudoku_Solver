@@ -1,7 +1,7 @@
 # BLASFLAGS = `pkg-config -cflags -libs openblas` -DBLAS_EXIST
 
 CC := gcc
-CFLAGS := -Wall -Wextra -Ofast -DDEBUG
+CFLAGS := -Wall -Wextra -Ofast # -DDEBUG
 
 SRC := main.c
 OBJ := ${SRC:.c=.o}

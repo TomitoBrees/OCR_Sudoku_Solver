@@ -481,10 +481,10 @@ int main() {
     // return test_xor();
     // return test_xor_backprop();
 
-    // res = test_SGD();
+    res = test_SGD();
     // return test_SGD_xor();
 
-    res = test_ilan();
+    // res = test_ilan();
 
     double time2 = clock();
     printf("time elapsed: %f s\n\n", (time2 - time1) / CLOCKS_PER_SEC);
