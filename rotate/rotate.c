@@ -62,9 +62,10 @@ SDL_Surface* rotation(SDL_Surface* surface, int degree)
         int new_width = (int)(fabs(width * c) + fabs(height * s));
         int new_height = (int)(fabs(width * s) + fabs(height * c));
 
-        SDL_Surface* rotated = SDL_CreateRGBSurface(0, new_width, new_height, depth, 0, 0, 0, 0);
+        SDL_Surface* rotated = SDL_CreateRGBSurface(0, new_width, new_height, depth, format->Rmask, format->Gmask, format->Bmask, format->Amask);
         if (rotated == NULL)
             errx(EXIT_FAILURE, "%s", SDL_GetError());
+
 
         int centerX = width / 2;
         int centerY = height / 2;
