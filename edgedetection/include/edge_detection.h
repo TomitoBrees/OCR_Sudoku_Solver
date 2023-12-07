@@ -24,13 +24,13 @@ void lineremoval(SDL_Surface* image, int width, int height,
 void linedetection(SDL_Surface* image, int width, int height,
                                SDL_PixelFormat* format, Uint32* pixels);
 
-void findAndExtractGridSquares(SDL_Surface* original, SDL_Surface* image, int width, int height,
+void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
                                SDL_PixelFormat* format, Uint32* pixels);
 
-void edgeDetection(SDL_Surface* image, SDL_Surface* original);
+SDL_Surface* HoughDetection(SDL_Surface* image);
 
 
-int  automaticRotation(int height, int width, SDL_Surface* image);
+SDL_Surface *  automaticRotation(SDL_Surface* image);
 
 
 SDL_Surface *  cannyEdgeDetection(SDL_Surface *image);
