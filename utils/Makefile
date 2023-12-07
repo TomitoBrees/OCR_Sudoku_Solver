@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Wextra -g `pkg-config --cflags sdl2 SDL2_image` -Iinclude/
+CFLAGS := -Wall -Wextra -g `pkg-config --cflags sdl2 SDL2_image` -Iinclude/ -DDEBUG
 LDLIBS := `pkg-config --libs sdl2 SDL2_image` -lm
 
 SRC := main.c

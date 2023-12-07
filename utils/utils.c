@@ -1,4 +1,5 @@
 #include "gemm.h"
+#include "defs.h"
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
@@ -19,22 +20,22 @@ SDL_Surface* load_image(const char* path)
 
 #define toI(i, j) i * 3 + j
 int invert_3x3_matrix(const float *in, float *out) {
-    float d = 0;
+    float det = 0;
     for (size_t i = 0; i < 3; i++) {
-        d += in[toI(0, i)] * (in[toI(1, (i+1)%3)] * in[toI(2, (i+2)%3)]
+        det += in[toI(0, i)] * (in[toI(1, (i+1)%3)] * in[toI(2, (i+2)%3)]
                 - in[toI(1, (i+2)%3)] * in[toI(2, (i+1)%3)]);
     }
 
-    //printf("det: %f\n", d);
+    PRINTF(det);
 
-    if (fabs(d) < 0.2)
+    if (fabs(det) < 0.2)
         return 0;
 
     for (size_t i = 0; i < 3; i++)
         for (size_t j = 0; j < 3; j++) {
             out[toI(j, i)] = (
                     in[toI((i+1)%3, (j+1)%3)] * in[toI((i+2)%3, (j+2)%3)] -
-                    in[toI((i+1)%3, (j+2)%3)] * in[toI((i+2)%3, (j+1)%3)]) / d;
+                    in[toI((i+1)%3, (j+2)%3)] * in[toI((i+2)%3, (j+1)%3)])/det;
         }
 
     return 1;

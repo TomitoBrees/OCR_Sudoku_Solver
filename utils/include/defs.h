@@ -10,12 +10,14 @@
 
 #define PRINTZ(a) printf("[DEBUG] "#a": %zu\n", a);
 #define PRINTF(a) printf("[DEBUG] "#a": %f\n", a);
+#define PRINTD(...) printf("[DEBUG] ");printf(__VA_ARGS__);
 
 #else
 
 #define DARR(a, len)
 #define PRINTZ(a)
 #define PRINTF(a)
+#define PRINTD(...)
 
 #endif
 
