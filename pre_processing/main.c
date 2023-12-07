@@ -28,6 +28,9 @@ struct op ops[] = {
     {"medium", surface_to_mediumfilter},
     {"smoothing", surface_to_smoothing_filter},
     {"threshold", surface_to_threshold_filter},
+    {"normalisation",surface_to_normalisation_filter},
+    {"threshold2",surface_to_adaptative_threshold2},
+    {"all",surface_to_all},
 };
 
 size_t ops_len = sizeof(ops) / sizeof(ops[0]);

@@ -44,8 +44,9 @@ static Uint32 pixel_to_medianfilter(SDL_PixelFormat* format, SDL_Surface* surfac
         Uint8 r,g,b;
         Uint32* pixels=surface->pixels;
 
-        Uint32 actual=pixel_to_grayscale(pixels[i*surface->w+j],format);
-        SDL_GetRGB(actual,format,&r,&g,&b);
+        //Uint32 actual=pixel_to_grayscale(pixels[i*surface->w+j],format);
+        Uint32 actual=pixels[i*surface->w+j];
+	SDL_GetRGB(actual,format,&r,&g,&b);
         R[0]=r;
         G[0]=g;
         B[0]=b;

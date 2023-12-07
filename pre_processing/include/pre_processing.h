@@ -16,3 +16,10 @@ void surface_to_smoothing_filter(SDL_Surface* surface);
 
 void surface_to_threshold_filter(SDL_Surface* surface);
 
+void surface_to_normalisation_filter(SDL_Surface* surface);
+
+void surface_to_adaptative_threshold2(SDL_Surface* surface);
+
+void surface_otsu_threshold(SDL_Surface* surface);
+
+void surface_to_all(SDL_Surface* surface);
