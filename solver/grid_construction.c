@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GRID_WIDTH 1200
-#define GRID_HEIGHT 1029
-
 SDL_Surface* number_images[10];
 int solved_grid[10][10];
 
@@ -128,8 +125,10 @@ SDL_Surface* build_grid(char *grid_path, char *sudoku_path)
 }
 
 
+/*
 void main()
 {
-    SDL_Surface *solved_sudoku = build_grid("grid_1.result", "blank-sudoku-grid.png");
+    SDL_Surface *solved_sudoku = build_grid("base_images/grid_1.result", "base_images/blank-sudoku-grid.png");
     IMG_SavePNG(solved_sudoku, "SOLVED.png");
 }
+ */

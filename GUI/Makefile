@@ -9,6 +9,7 @@ OBJ := ${SRC:.c=.o}
 include ../edgedetection/inc.mk
 include ../pre_processing/inc.mk
 include ../rotate/inc.mk
+include ../solver/inc.mk
 
 $(TARGET): $(OBJ)
 

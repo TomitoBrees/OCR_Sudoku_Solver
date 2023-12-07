@@ -14,7 +14,7 @@
 //
 // btw tous les #ifdef c'est a cause de windows qui fait sa crise d'ado
 
-char get_char(char **argv, FILE *f) {
+char get_char(char *sudoku, FILE *f) {
     int c = 0;
     while (c != EOF && c != '.' && (c > '9' || c < '1'))
         c = fgetc(f);
@@ -24,25 +24,25 @@ char get_char(char **argv, FILE *f) {
 #else
         errx(EXIT_FAILURE,
                 "unexpected End Of File (EOF) while parsing input file '%s'",
-                argv[1]);
+                sudoku);
 #endif
     if (c == '.')
         return 0;
     return (char)c - '0';
 }
 
-void parse_sudoku(char **argv, char *res) {
-    FILE *f = fopen(argv[1], "rb");
+void parse_sudoku(char *sudoku, char *res) {
+    FILE *f = fopen(sudoku, "rb");
     if (f == NULL)
 #ifdef _WIN32
         exit(3);
 #else
-        errx(EXIT_FAILURE, "unable to open input file: %s", argv[1]);
+        errx(EXIT_FAILURE, "unable to open input file: %s", sudoku);
 #endif
 
     for (int i = 0; i < GRID_SIZE; i++)
         for (int j = 0; j < GRID_SIZE; j++)
-            res[j + i * GRID_SIZE] = get_char(argv, f);
+            res[j + i * GRID_SIZE] = get_char(sudoku, f);
 
     fclose(f);
 }
@@ -148,23 +148,24 @@ void solve(char* sudoku) {
 }
 
 
-int main(int argc, char **argv) {
-    if (argc == 1)
-#ifdef _WIN32
-        exit(1);
-#else
-        errx(EXIT_FAILURE, "Usage: %s <grid file>", argv[0]);
-#endif
-
+void solve_sudoku(char* sudoku_file)
+{
     char sudoku[GRID_SIZE * GRID_SIZE];
 
-    parse_sudoku(argv, sudoku);
+    parse_sudoku(sudoku_file, sudoku);
     solve(sudoku);
 
-    char outputname[strlen(argv[1]) + 7 + 1];
-    strcpy(outputname, argv[1]);
+    char outputname[strlen(sudoku_file) + 7 + 1];
+    strcpy(outputname, sudoku_file);
     strcat(outputname, ".result");
 
     save_sudoku(sudoku, outputname);
-    return 0;
 }
+
+/*
+int main()
+{
+    solve_sudoku("grid_1");
+    return EXIT_SUCCESS;
+}
+ */

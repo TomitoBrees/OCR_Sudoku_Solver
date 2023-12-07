@@ -7,8 +7,9 @@
 #include "edge_detection.h"
 #include "pre_processing.h"
 #include "rotate.h"
+#include "solver.h"
 
-/* STRUCTURES */
+/* STRUCTURES & VARIABLES */
 
 typedef enum State
 {
@@ -52,6 +53,12 @@ typedef struct Application
     Widgets widgets;
 } Application;
 
+typedef struct Loader
+{
+    GtkWidget *window;
+    char* image_path;
+} Loader;
+
 
 /* AUXILIARY FUNCTIONS */
 
@@ -61,6 +68,7 @@ void apply_css (GtkWidget *widget, GtkCssProvider *provider)
     gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
+/*
 SDL_Surface* load_image(const char* path)
 {
     SDL_Surface* surface = IMG_Load(path);
@@ -74,11 +82,13 @@ SDL_Surface* load_image(const char* path)
     SDL_FreeSurface(surface);
     return surfaceRGB;
 }
+*/
 
 /* SOLVER MENU */
 
 void pre_process_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     if(app->state == START)
@@ -89,10 +99,10 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
         //Modify the surface of the original image
         SDL_Surface *image_surface = app->widgets.image_surface;
         surface_to_grayscale(image_surface);
-        IMG_SavePNG(image_surface, "image_grayscale.png");
+        IMG_SavePNG(image_surface, "returned_images/image_grayscale.png");
 
         //Render the new image as a widget and replace the old one
-        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("image_grayscale.png", 900, 679, FALSE, NULL);
+        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_grayscale.png", 900, 679, FALSE, NULL);
 
         GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
         gtk_widget_set_name(new_image, "sudoku_image");
@@ -122,6 +132,7 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
 
 void rotation_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     if(app->state == PRE_PROCESSING)
@@ -144,6 +155,7 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
 
 void detection_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     if(app->state == ROTATION)
@@ -166,6 +178,7 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
 
 void ai_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     if(app->state == DETECTION)
@@ -188,11 +201,27 @@ void ai_button_clicked(GtkWidget *widget, gpointer data)
 
 void construction_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     if(app->state == AI)
     {
         app->state = CONSTRUCTION;
+
+        solve_sudoku("grids/grid_1");
+        SDL_Surface *solved_sudoku = build_grid("grids/grid_1.result", "base_images/blank-sudoku-grid.png");
+        IMG_SavePNG(solved_sudoku, "returned_images/solved_grid.png");
+
+        //Render the new image as a widget and replace the old one
+        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/solved_grid.png", 504, 504, FALSE, NULL);
+
+        GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+        gtk_widget_set_name(new_image, "sudoku_image");
+
+        gtk_widget_destroy(app->widgets.image);
+        gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+        app->widgets.image = new_image;
+        app->widgets.image_surface = solved_sudoku;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -205,11 +234,13 @@ void construction_button_clicked(GtkWidget *widget, gpointer data)
         apply_css(app->widgets.construction_button, newCssProvider);
         apply_css(app->widgets.detection_button, newCssProvider);
         apply_css(app->widgets.ai_button, newCssProvider);
+
+        gtk_widget_show_all(app->widgets.main_window);
     }
 }
 
 
-void load_solver_window()
+void load_solver_window(char* base_path)
 {
     gtk_init(NULL, NULL);
 
@@ -238,14 +269,14 @@ void load_solver_window()
     g_signal_connect(main_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     // Initialize the image in the image box
-    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("sudoku_1.jpeg", 900, 679, FALSE, NULL);
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale(base_path, 900, 679, FALSE, NULL);
 
     GtkWidget *image = gtk_image_new_from_pixbuf(buf);
     gtk_widget_set_name(image, "sudoku_image");
     gtk_box_pack_start(GTK_BOX(image_box), image, TRUE, TRUE, 0);
 
     //Create the SDL_Surface for the image
-    SDL_Surface *image_surface = load_image("sudoku_1.jpeg");
+    SDL_Surface *image_surface = load_image(base_path);
 
     // Apply the styles
     apply_css(main_window, cssProvider);
@@ -298,6 +329,7 @@ void load_solver_window()
 
 void func_pre_proccess_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     // Load new CSS file
@@ -325,6 +357,7 @@ void func_pre_proccess_button_clicked(GtkWidget *widget, gpointer data)
 
 void black_white_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     //Modify the surface of the original image
@@ -359,6 +392,7 @@ void black_white_clicked(GtkWidget *widget, gpointer data)
 
 void median_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     //Modify the surface of the original image
@@ -395,6 +429,7 @@ void median_button_clicked(GtkWidget *widget, gpointer data)
 
 void threshold_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     //Modify the surface of the original image
@@ -430,6 +465,7 @@ void threshold_button_clicked(GtkWidget *widget, gpointer data)
 
 void inversion_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     //Modify the surface of the original image
@@ -464,6 +500,7 @@ void inversion_button_clicked(GtkWidget *widget, gpointer data)
 
 void canny_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     // Load new CSS file
@@ -481,6 +518,7 @@ void canny_button_clicked(GtkWidget *widget, gpointer data)
 
 void func_rotation_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     // Load new CSS file
@@ -507,6 +545,7 @@ void func_rotation_button_clicked(GtkWidget *widget, gpointer data)
 
 void manual_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
     Application *app = data;
 
     GtkWidget *holder = app->widgets.manual_holder;
@@ -542,7 +581,7 @@ void manual_button_clicked(GtkWidget *widget, gpointer data)
     gtk_widget_show(app->widgets.image);
 }
 
-void load_func_window()
+void load_func_window(char* base_path)
 {
     gtk_init(NULL, NULL);
 
@@ -580,14 +619,14 @@ void load_func_window()
     g_signal_connect(main_window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     // Initialize the image in the image box
-    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("sudoku_1.jpeg", 900, 679, FALSE, NULL);
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale(base_path, 900, 679, FALSE, NULL);    //CHANGED
 
     GtkWidget *image = gtk_image_new_from_pixbuf(buf);
     gtk_widget_set_name(image, "sudoku_image");
     gtk_box_pack_start(GTK_BOX(image_box), image, TRUE, TRUE, 0);
 
     //Create the SDL_Surface for the image
-    SDL_Surface *image_surface = load_image("sudoku_1.jpeg");
+    SDL_Surface *image_surface = load_image("base_path");    //CHANGED
 
     // Apply the styles
     apply_css(main_window, cssProvider);
@@ -655,29 +694,33 @@ void load_func_window()
 
 void solver_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
+
     //Get the window from the arguments
-    GtkWidget *main_window = GTK_WIDGET(data);
+    Loader *load = data;
 
     //Destroy and quit the window
-    gtk_widget_destroy(main_window);
+    gtk_widget_destroy(load->window);
     gtk_main_quit();
 
-    load_solver_window();
+    load_solver_window(load->image_path);
 }
 
 void func_button_clicked(GtkWidget *widget, gpointer data)
 {
+    (void)widget;
+
     //Get the window from the arguments
-    GtkWidget *main_window = GTK_WIDGET(data);
+    Loader *load = data;
 
     //Destroy and quit the window
-    gtk_widget_destroy(main_window);
+    gtk_widget_destroy(load->window);
     gtk_main_quit();
 
-    load_func_window();
+    load_func_window(load->image_path);
 }
 
-void load_main_window()
+void load_main_window(char* base_path)
 {
     gtk_init(NULL, NULL);
 
@@ -707,9 +750,15 @@ void load_main_window()
     apply_css(func_button, cssProvider);
     apply_css(solver_button, cssProvider);
 
+    Loader loader =
+            {
+                .window = main_window,
+                .image_path = base_path,
+            };
+
     //Connect the buttons
-    g_signal_connect(solver_button, "clicked", G_CALLBACK(solver_button_clicked), main_window);
-    g_signal_connect(func_button, "clicked", G_CALLBACK(func_button_clicked), main_window);
+    g_signal_connect(solver_button, "clicked", G_CALLBACK(solver_button_clicked), &loader);
+    g_signal_connect(func_button, "clicked", G_CALLBACK(func_button_clicked), &loader);
 
     // Show the main window
     gtk_widget_show_all(main_window);
@@ -719,8 +768,12 @@ void load_main_window()
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
 {
-    load_main_window();
+    //Checks the number of arguments.
+    if (argc != 2)
+        errx(EXIT_FAILURE, "Usage: <image-file>");
+
+    load_main_window(argv[1]);
     return 0;
 }
