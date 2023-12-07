@@ -102,6 +102,7 @@ int init_dataset(const char *folder) {
                 errx(EXIT_FAILURE, "failed to load item %s (err code: %i)", dir->d_name, e);
         }
     closedir(d);
+    dataset_train_size = file_num;
     return 0;
 }
 
@@ -114,7 +115,7 @@ static void dataset_print_digit(const struct network_item *item) {
     printf("label: %zu\n", uarr_max(item->res, 10));
 }
 
-int main() {
+/*int main() {
     printf("loading dataset...\n");
     const char *folder = "training_set/";
     if (init_dataset(folder) != 0)
@@ -126,5 +127,5 @@ int main() {
         printf("\n");
     }
 
-}
+}*/
 

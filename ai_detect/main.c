@@ -3,6 +3,7 @@
 
 #include "network.h"
 #include "utils.h"
+#include "defs.h"
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
@@ -42,6 +43,7 @@ void detect_digits(const struct network *net,
 
         digits[i] = res;
         printf("index %zu: (%zu, %.3f)\n", i, res, m);
+        DARR(output, 10);
     }
 }
 
@@ -87,10 +89,12 @@ void center_image(SDL_Surface **img) {
     *img = out;
 }
 
-int main() {
+int main(int argc, char **argv) {
+    if (argc != 2)
+        errx(EXIT_FAILURE, "Usage: main <filename>");
     printf("Hello wolrd!\n");
 
-    SDL_Surface *img = load_image("digit_9.bmp");
+    SDL_Surface *img = load_image(argv[1]);
     if (img == NULL)
         errx(EXIT_FAILURE, "failed to load image: %s", SDL_GetError());
 
@@ -98,8 +102,8 @@ int main() {
     center_image(&img);
 
     const float trans[] = {
-        35.0/(float)img->w, 0, -4,
-        0, 35.0/(float)img->h, -4,
+        45.0/(float)img->w, 0, -8,
+        0, 45.0/(float)img->h, -8,
         0, 0, 1,
     };
 
@@ -112,7 +116,7 @@ int main() {
     if (e < 0)
         errx(EXIT_FAILURE, "unable to save image: %s", SDL_GetError());
 
-    const char *ai_path = "../ai/mnist_ai";
+    const char *ai_path = "../ai/dataset_ai";
 
     struct network net;
     e = network_new_from_file(&net, ai_path);

@@ -1,11 +1,11 @@
 #include "sys/types.h"
-//#include "network.h"
+#include "network.h"
 
 
-struct network_item {
+/*struct network_item {
     float *input; //28
     float *res;    //10
-};
+};*/
 
 
 extern size_t dataset_train_size;

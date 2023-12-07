@@ -7,3 +7,6 @@
 **/*.a
 **/*.o
 **/*.exe
+
+ai/dataset/training_set/
+ai/dataset/testing_set

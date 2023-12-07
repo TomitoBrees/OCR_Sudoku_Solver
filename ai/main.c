@@ -4,6 +4,9 @@
 
 #include "mnist/mnist.h"
 #include "xor/xor.h"
+#include "dataset/dataset.h"
+
+#include "defs.h"
 
 #include "network.h"
 #include "sgemm.h"
@@ -279,8 +282,8 @@ int test_backprop() {
         printf("Output: { ");
         for (size_t i = 0; i < 10; i++)
             printf("%f ", output[i]);
-        size_t s = umax(output, 10);
-        if (s == umax(item->res, 10))
+        size_t s = uarr_max(output, 10);
+        if (s == uarr_max(item->res, 10))
             score++;
         printf("} res: %zi\n", s);
     }
@@ -363,8 +366,8 @@ int test_xor_backprop() {
         struct network_item *item = xor_dataset + test_offset + i;
         DARR(item->input, xor_size);
         network_feed_forward(&net, item->input, output);
-        size_t s = umax(output, 2);
-        if (s == umax(item->res, 2))
+        size_t s = uarr_max(output, 2);
+        if (s == uarr_max(item->res, 2))
             score++;
         printf("Output: { %f %f } %zu\n", output[0], output[1], s);
     }
@@ -462,6 +465,41 @@ int test_ilan() {
     return 0;
 }
 
+int test_SGD_font() {
+    if (init_dataset("dataset/training_set/") != 0) {
+        printf("ERR: unable to load dataset\n");
+        return -1;
+    }
+
+    size_t layers[] = {28 * 28, 30, 10};
+    struct network net;
+    network_new(&net, layers, sizeof(layers)/sizeof(size_t));
+    network_fill_random(&net);
+
+    const size_t epochs_num = 20 ; // 100
+    const size_t mini_batch_size = 100; // 100
+    const NETWORK_NUM eta = 3.0; // 1.0;
+
+
+    network_SGD(&net, dataset_train, dataset_train_size, epochs_num, mini_batch_size,
+             eta, NULL, 0);
+    //network_SGD(&net, dataset_train, dataset_train_size, epochs_num, mini_batch_size,
+    //        eta, dataset_test, dataset_test_size);
+
+    printf("score (trainning dataset): %zu\n",
+            network_evaluate(&net, dataset_train, dataset_train_size));
+    printf("score (test dataset): %zu\n",
+            network_evaluate(&net, dataset_test, dataset_test_size));
+
+    if (network_write_to_file(&net, "dataset_ai") != 0) {
+        printf("failed to write ai\n");
+    }
+
+    mnist_unload();
+
+    return 0;
+}
+
 int main() {
     //srand(time(NULL));
     srand(0);
@@ -482,6 +520,7 @@ int main() {
     // return test_xor_backprop();
 
     res = test_SGD();
+    res = test_SGD_font();
     // return test_SGD_xor();
 
     // res = test_ilan();

@@ -25,7 +25,7 @@ int invert_3x3_matrix(const float *in, float *out) {
                 - in[toI(1, (i+2)%3)] * in[toI(2, (i+1)%3)]);
     }
 
-    printf("det: %f\n", d);
+    //printf("det: %f\n", d);
 
     if (fabs(d) < 0.2)
         return 0;
@@ -47,11 +47,11 @@ SDL_Surface * utils_affine_trans(SDL_Surface *image, const float *trans,
     if (invert_3x3_matrix(trans, inv_trans) == 0)
         return NULL;
 
-    for (size_t i = 0; i < 3; i++) {
+    /*for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++)
             printf("%f ", inv_trans[i * 3 + j]);
         printf("\n");
-    }
+    }*/
 
     ssize_t in_w = image->w;
     ssize_t in_h = image->h;
