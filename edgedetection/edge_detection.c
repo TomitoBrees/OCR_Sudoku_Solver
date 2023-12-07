@@ -1,10 +1,22 @@
 #include <SDL2/SDL.h>
+#include "../rotate/include/rotate.h"
+
 //#include <math.h>
+
+
+
+
+
+
+
+
+
 
 void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat* format, 
                            int sobelX[3][3], int sobelY[3][3], 
                            Uint32 magnitudes[width*height], Uint32 angles[width*height])
-{
+{   
+    
     for (int y = 1; y < height - 1; y++) 
     {
         for (int x = 1; x < width - 1; x++) 
@@ -40,9 +52,13 @@ void applySobelConvolution(int height, int width, Uint32* pixels,SDL_PixelFormat
             {
                 angles[y * width + x] = 0.0;
             }
+            
 
         }
-    }
+    }   
+    
+    
+
 }
 
 
@@ -170,9 +186,11 @@ void hysteresisAnalysis(int height, int width, Uint32* pixels,
     }
 }
 
-void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* format)
 
+int automaticRotation(int height, int width,
+                       SDL_Surface* image)
 {
+
     int max_rho = (int)sqrt((width * width) + (height * height));
 
     int accumulator[max_rho][180];
@@ -188,6 +206,7 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
         }
     }
 
+    Uint32* pixels = image->pixels;
 
 
 
@@ -208,7 +227,6 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 
 
 
-
     int max = 0;
 
     for(int i = 0; i< max_rho; i++) // Finds the max value of the accumulator to prune the number of lines 
@@ -224,6 +242,117 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 
 
     int hough_treshold = 0.7 * max; // Can be adjusted but works fine to draw coherent lines, only the 10 best of them will be kept
+
+    int histo[180];
+    for (int j = 0; j< 180; j++)
+    {
+        histo[j] = 0;
+    }
+
+
+
+
+    for (int rhoIndex = 0; rhoIndex < max_rho; rhoIndex++)
+    {
+        for (int theta = 45; theta < 135; theta++) 
+        {
+            if (accumulator[rhoIndex][theta] > hough_treshold) 
+            {
+
+                histo[theta]+=1;
+
+            }
+
+        }
+
+    }
+
+
+
+    int maxi = 0;
+    int angleT = 0;
+    for(int j = 0; j <180; j++)
+    {
+        if(histo[j] > maxi)
+        {
+            maxi = histo[j];
+            angleT = j;
+        }
+    }
+
+
+    int deg = 360 - (angleT) + 90;
+
+
+    image = rotation(image,deg);
+
+
+
+
+
+
+
+    return deg;
+    
+
+
+
+
+}
+
+
+void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* format)
+
+{
+
+    int max_rho = (int)sqrt((width * width) + (height * height));
+
+    int accumulator[max_rho][180];
+
+
+
+    
+    for(int i = 0; i< max_rho; i++) // accumulator initialization
+    {
+        for (int j = 0; j< 180; j++)
+        {
+            accumulator[i][j] = 0;
+        }
+    }
+
+
+
+    for (int y = 1; y < height-1; y++) // Populates the accumulator with rho and theta values
+    {
+        for (int x = 1; x < width-1; x++) 
+        {
+            if (pixels[y * width + x] != 0) 
+            {
+                for (int theta = 0; theta < 180; theta++) 
+                {
+                    int corresponding_rho = (int)(x * cos(theta * M_PI/180) + y * sin(theta * M_PI/180));
+                    accumulator[corresponding_rho][theta]++;
+                }
+            }
+        }
+    }
+
+
+
+    int max = 0;
+
+    for(int i = 0; i< max_rho; i++) // Finds the max value of the accumulator to prune the number of lines 
+    {
+        for(int j = 0; j< 180; j++)
+        {
+            if (accumulator[i][j] > max)
+            {
+                max = accumulator[i][j];
+            }
+        }
+    }
+
+    int hough_treshold = 0.5 * max; // Can be adjusted but works fine to draw coherent lines, only the 10 best of them will be kept
 
     struct Line
     {
@@ -358,6 +487,39 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
                     }
                 }
 
+
+
+/*
+
+
+                double cosTheta = cos(theta * M_PI / 180);
+                double sinTheta = sin(theta * M_PI / 180);
+
+                int d = 10000;
+
+                double x0 = rhoIndex * cosTheta;
+                double y0 = rhoIndex * sinTheta;
+
+                int x1 = (int)(x0 - d * (-sinTheta));
+                y1 = (int)(y0 - d * (cosTheta));
+
+                for (int i = 0; i <= d; i++) 
+                {
+                    int x = x0 + i * (x1 - x0) / d;
+                    int y = y0 + i * (y1 - y0) / d;
+
+                    if (x >= 0 && x < width && y >= 0 && y < height) 
+                    {
+                        pixels[y*width + x] = SDL_MapRGB(format, 0, 255, 0);
+                    }
+                }
+
+                
+*/
+
+
+
+
             }
         }
     }
@@ -392,6 +554,7 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
                 }
         }   
     }
+
 }
 
 
@@ -448,7 +611,7 @@ void linedetection(SDL_Surface* image, int width, int height,
 }
 
 
-void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
+void findAndExtractGridSquares(SDL_Surface* original,SDL_Surface * image, int width, int height,
                                SDL_PixelFormat* format, Uint32* pixels)
 {
     struct coordinates 
@@ -458,9 +621,9 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     };
 
 
-    struct coordinates intersection[4]; // 4 vertices of the grid
+    struct coordinates intersection[10]; // 4 vertices of the grid
 
-    for(int i  = 0; i< 4; i++)
+    for(int i  = 0; i< 10; i++)
     {
         struct coordinates current;
         current.x = 0;
@@ -469,8 +632,13 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     }
 
 
+
+    /*
+
     int xcount = 0;
     int ycount = 0;
+
+    
 
     for(int x = 0; x< width; x++)
     {
@@ -579,20 +747,136 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     }
 
+    */ 
 
-    int xLen = abs((int)(intersection[2].x - intersection[0].x));
-    int xStep = xLen/9;
-    int yLen = abs((int)(intersection[1].y - intersection[0].y));
-    int yStep = yLen/9;
+    int firstCol = 0;
+    int count = 0;
+    int linecount = 0;
+
+    int gridLength = 0;
+
+    for(int x = 0; x< width; x++)
+    {
+        Uint8 r, g, b;
+        SDL_GetRGB(pixels[x], format, &r, &g, &b);
+
+        if (r == 0 && b == 0 && g == 255)
+        {   
+
+            if (count == 0)
+            {
+
+                firstCol = x;
+                count ++;
+            }
+            else
+            {
+                gridLength = firstCol - x;
+                break;
+            }
+
+        }
+
+    }
+
+    printf("%i\n", firstCol );
+
+
+
+
+    
+
+    for(int j = 0; j < height; j++)
+    {
+        Uint8 r, g, b;
+        SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
+        if (r == 0 && b == 0 && g == 255)
+        {
+            /*
+            Uint8 r, g, b;
+            Uint8 _r, _g, _b;
+            SDL_GetRGB(pixels[firstCol + (j +gridLength) * width +10], format, &r, &g, &b);
+            SDL_GetRGB(pixels[firstCol + (j +gridLength) * width +10], format, &_r, &_g, &_b);
+
+            for (int x =0 ; x < width; x++)
+            {
+                pixels[x + (j ) * width +10] = SDL_MapRGB(format, 0, 0, 255);
+            }
+
+
+            pixels[firstCol + (j +gridLength) * width +10] = SDL_MapRGB(format, 0, 0, 255);
+
+            if ((r == 0 && b == 0 && g == 255) || (_r == 0 && _b == 0 && _g == 255))
+            {
+                linecount ++;
+
+                for(int x = 0; x < width; x++)
+                {
+                    pixels[x + (j +gridLength) * width +10] = SDL_MapRGB(format, 0, 0, 255);
+                }
+
+            
+            }
+            */
+            for (int z = -10; z < 10; z++)
+            {
+                int found = 0;
+
+                Uint8 r, g, b;
+                Uint8 _r, _g, _b;
+                SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
+                SDL_GetRGB(pixels[firstCol + (j + z -gridLength) * width +10], format, &_r, &_g, &_b);
+
+
+
+
+                if ((r == 0 && b == 0 && g == 255) || (_r == 0 && _b == 0 && _g == 255))
+                {
+                    struct coordinates current;
+                    current.y= j;
+                    current.x = firstCol;
+                    intersection[linecount] = current;
+                    linecount ++;
+                    found = 1;
+                    
+                }
+
+                if (found == 1)
+                {
+                    break;
+                }
+            }
+
+            
+        }
+
+
+
+
+    }
+    
+
+
+    for (int x = 0; x< linecount; x++)
+    {
+        printf("X = %i", x);
+        int topleftX = (int)intersection[x].x;
+        int topleftY = (int)intersection[x].y;
+        pixels[topleftX + topleftY * width ] = SDL_MapRGB(format, 255, 0, 0);
+    }
+    
+    int Len = abs((int)(intersection[0].y - intersection[linecount-1].y));
+    int Step = Len/9;
     int topleftX = (int)intersection[0].x;
     int topleftY = (int)intersection[0].y;
+
 
     int i = 1;
 
 
-    for(int y = 0; y <  yLen - yStep; y += yStep)
+    for(int y = 0; y <  Len - Step-1; y += Step)
     {
-        for(int x = 0; x <  xLen - xStep; x += xStep)
+        for(int x = 0; x <  Len - Step; x += Step)
         {
             
             int xcorda = topleftX + x;
@@ -601,8 +885,8 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
             SDL_Rect square;
             square.x = xcorda = topleftX + x;
             square.y = ycorda = topleftY + y;
-            square.w = xStep;
-            square.h = yStep;
+            square.w = Step;
+            square.h = Step;
             SDL_Surface* subImage = SDL_CreateRGBSurface(0, square.w, square.h, original->format->BitsPerPixel, original->format->Rmask, original->format->Gmask, original->format->Bmask, original->format->Amask);
 
             
@@ -629,17 +913,75 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     SDL_Rect square;
     square.x = (int)intersection[0].x;
     square.y = (int)intersection[0].y;
-    square.w = abs((int)(intersection[2].x - intersection[0].x));
-    square.h = abs((int)(intersection[1].y - intersection[0].y));
+   
+
+   square.x -= Len/15;
+   square.y -= Len/15;
+
+
+
+
+    square.w = Len + Len/15;
+    square.h = Len + Len/15;
 
     SDL_Surface* subImage = SDL_CreateRGBSurface(0, square.w, square.h, original->format->BitsPerPixel, original->format->Rmask, original->format->Gmask, original->format->Bmask, original->format->Amask);
 
     SDL_BlitSurface(original, &square, subImage, NULL);
 
     SDL_SaveBMP(subImage, "PICTURES/EXTRACTED GRID.bmp");
+
+    
 }
 
-void edgeDetection(SDL_Surface* image, SDL_Surface* original) 
+
+
+
+SDL_Surface *  cannyEdgeDetection(SDL_Surface *image)
+{
+
+    int sobelX[3][3] = { { -1, 0, 1 }, 
+                         { -2, 0, 2 }, 
+                         { -1, 0, 1 } }; // Sobel Matrix for X convolution
+
+    int sobelY[3][3] = { { -1, -2, -1 },
+                         {  0,  0,  0 }, 
+                         {  1,  2,  1 } }; // Sobel Matrix for Y convolution
+
+    int height = image->h;
+    int width = image->w;
+
+    Uint32 magnitudes[width*height]; // Gradient obtained with Sobel
+
+    Uint32 angles[width*height]; // Angles used for non maxima removal
+
+    applySobelConvolution(height, width, image->pixels, image->format,
+            sobelX, sobelY, magnitudes, angles);
+
+
+    
+    nonMaximaSuppression(height, width, image->pixels, magnitudes, angles);
+
+
+
+
+    applyThresholding(height, width, image->pixels,
+            magnitudes, image->format);
+
+
+
+
+
+    hysteresisAnalysis(height, width, image->pixels, magnitudes);
+
+    return image;
+
+}
+
+
+
+
+
+/*void edgeDetection(SDL_Surface* image, SDL_Surface* original) 
 {
     int sobelX[3][3] = { { -1, 0, 1 }, 
                          { -2, 0, 2 }, 
@@ -660,6 +1002,63 @@ void edgeDetection(SDL_Surface* image, SDL_Surface* original)
 
     Uint32 angles[width*height]; // Angles used for non maxima removal
 
+
+    int max_rho = (int)sqrt((width * width) + (height * height));
+
+    int accumulator[max_rho][180];
+
+
+
+
+    
+    for(int i = 0; i< max_rho; i++) // accumulator initialization
+    {
+        for (int j = 0; j< 180; j++)
+        {
+            accumulator[i][j] = 0;
+        }
+    }
+
+
+
+
+    for (int y = 1; y < height-1; y++) // Populates the accumulator with rho and theta values
+    {
+        for (int x = 1; x < width-1; x++) 
+        {
+            if (pixels[y * width + x] != 0) 
+            {
+                for (int theta = 0; theta < 180; theta++) 
+                {
+                    int corresponding_rho = (int)(x * cos(theta * M_PI/180) + y * sin(theta * M_PI/180));
+                    accumulator[corresponding_rho][theta]++;
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+    int max = 0;
+
+    for(int i = 0; i< max_rho; i++) // Finds the max value of the accumulator to prune the number of lines 
+    {
+        for(int j = 0; j< 180; j++)
+        {
+            if (accumulator[i][j] > max)
+            {
+                max = accumulator[i][j];
+            }
+        }
+    }
+
+
+
+
+
     applySobelConvolution(height, width, pixels,format,sobelX, sobelY, magnitudes, angles);
 
     nonMaximaSuppression( height, width, pixels, magnitudes, angles);
@@ -668,10 +1067,14 @@ void edgeDetection(SDL_Surface* image, SDL_Surface* original)
 
     hysteresisAnalysis(height, width, pixels, magnitudes);
 
-    houghTransform(height, width, pixels, format);
+    automaticRotation(height, width, accumulator, max_rho, max, image ,original);
+
+    houghTransform(height, width, pixels, format, accumulator, max_rho, max);
 
     findAndExtractGridSquares(original, width, height, format, pixels);
 
     SDL_UnlockSurface(image);
 }
+*/
+
 

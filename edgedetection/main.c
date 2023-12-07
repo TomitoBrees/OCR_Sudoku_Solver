@@ -1,7 +1,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "err.h"
-
+#include "../rotate/include/rotate.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 
@@ -94,7 +94,9 @@ SDL_Surface* load_image(const char* path)
     return new_surface;
 }
 
-SDL_Texture ** test(SDL_Renderer *renderer, SDL_Surface *image, size_t *count) {
+SDL_Texture ** test(SDL_Renderer *renderer, SDL_Surface *image, size_t *count) 
+{
+
     SDL_Surface *original = SDL_ConvertSurface(image, image->format, 0);
 
     int sobelX[3][3] = { { -1, 0, 1 }, 
@@ -112,33 +114,157 @@ SDL_Texture ** test(SDL_Renderer *renderer, SDL_Surface *image, size_t *count) {
 
     Uint32 angles[width*height]; // Angles used for non maxima removal
 
-    *count = 6;
+    *count = 15;
     SDL_Texture **textures = malloc((*count) * sizeof(SDL_Texture *));
 
     size_t c = 0;
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
 
+    
+
+
+
+
+
+//              HOUGH BASIS                 //
+
+
+
+    
+
+
+
+
+
+
+
+
+
     //edgeDetection(image, original);
     //textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
 
     applySobelConvolution(height, width, image->pixels, image->format,
             sobelX, sobelY, magnitudes, angles);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
 
+
+    
     nonMaximaSuppression(height, width, image->pixels, magnitudes, angles);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+
 
     applyThresholding(height, width, image->pixels,
             magnitudes, image->format);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
 
+
+
+
+
     hysteresisAnalysis(height, width, image->pixels, magnitudes);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+
+    
+    
+    int deg = automaticRotation(height, width, image);
+    
+    image = rotation(image,deg);
+    textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+    original = rotation(original,deg);
+
+
+
+    SDL_Rect square;
+    square.x = (original->w - width)/2;
+    square.y = (original->h - height)/2;
+
+
+    square.w = width;
+    square.h = height;
+
+    SDL_Surface* subImage = SDL_CreateRGBSurface(0, square.w, square.h, original->format->BitsPerPixel, original->format->Rmask, original->format->Gmask, original->format->Bmask, original->format->Amask);
+
+    SDL_BlitSurface(original, &square, subImage, NULL);
+
+    SDL_SaveBMP(subImage, "PICTURES/rotated.bmp");
+
+
+
+    image = load_image("PICTURES/rotated.bmp");
+
+    original = SDL_ConvertSurface(image, image->format, 0);
+
+
+
+    height = image->h;
+    width = image->w;
+
+
+
+
+
+
+    applySobelConvolution(height, width, image->pixels, image->format,
+            sobelX, sobelY, magnitudes, angles);
+    textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+    
+    nonMaximaSuppression(height, width, image->pixels, magnitudes, angles);
+    textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+
+
+    applyThresholding(height, width, image->pixels,
+            magnitudes, image->format);
+    textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+
+
+
+    hysteresisAnalysis(height, width, image->pixels, magnitudes);
+    textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+
+
+
+
 
     houghTransform(height, width, image->pixels, image->format);
     textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
 
-    findAndExtractGridSquares(original, width, height, image->format, image->pixels);
+    
+    
+    findAndExtractGridSquares(image, image, width, height, image->format, image->pixels);
+        textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+
+    /*image = load_image("PICTURES/EXTRACTED GRID.bmp");
+
+    findAndExtractGridSquares(image, image, width, height, image->format, image->pixels);
+        textures[c++] = SDL_CreateTextureFromSurface(renderer, image);
+        */
+
+
+
+
+
+
+
+
+    
+    
+
+
+
+
 
     return textures;
 }
@@ -151,7 +277,7 @@ int main(int argc, char** argv)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window = SDL_CreateWindow("Hough Transform", 0, 0, 400,400,
+    SDL_Window* window = SDL_CreateWindow("Hough Transform", 0, 0, 1500,1500,
             SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (window == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -161,11 +287,17 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
 
+
+
     SDL_Surface* surface = load_image(argv[1]);
     //SDL_Surface* original_surface = load_image(argv[1]);
 
+  
+
     SDL_SetWindowSize(window,surface->w,surface->h);
 
+    
+    
     size_t count;
     SDL_Texture **textures = test(renderer, surface, &count);
 
@@ -174,6 +306,14 @@ int main(int argc, char** argv)
     for (size_t i = 0; i < count; i++)
         SDL_DestroyTexture(textures[i]);
     free(textures);
+    
+
+
+
+
+
+
+
 
     /*SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,surface);
 
@@ -189,9 +329,13 @@ int main(int argc, char** argv)
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(cannyTexture);*/
 
+    
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+
 
     return EXIT_SUCCESS;
 }
