@@ -3,6 +3,7 @@
 #include "string.h"
 
 #include "mnist.h"
+#include "defs.h"
 
 size_t mnist_trainning_dataset_size = -1;
 size_t mnist_test_dataset_size = -1;
@@ -89,7 +90,7 @@ err:
 }
 
 static int mnist_load_idx3(const char *path, size_t *count,
-        NETWORK_NUM ***pixels) {
+        float ***pixels) {
     FILE *f = fopen(path, "rb");
     if (f == NULL) {
         return -1;
@@ -113,16 +114,16 @@ static int mnist_load_idx3(const char *path, size_t *count,
     }
 
     size_t l = 0;
-    NETWORK_NUM **vals = malloc(c * sizeof(NETWORK_NUM*));
+    float **vals = malloc(c * sizeof(float*));
     for (size_t i = 0; i < (unsigned long)c; i++) {
         unsigned char val[28 * 28];
         if (fread(val, sizeof(unsigned char), 28 * 28, f) != 28 * 28) {
             goto errp;
         }
 
-        NETWORK_NUM *image = malloc(28 * 28 * sizeof(NETWORK_NUM));
+        float *image = malloc(28 * 28 * sizeof(float));
         for (size_t j = 0; j < 28 * 28; j++)
-            image[j] = (NETWORK_NUM)((NETWORK_NUM)(val[j]) / 255.0);
+            image[j] = (float)((float)(val[j]) / 255.0);
 
         vals[i] = image;
         l++;
@@ -148,7 +149,7 @@ err:
 ///////////////////////////// TESTS AND DEBUGS ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-static void print_digit(NETWORK_NUM *pixels) {
+static void print_digit(float *pixels) {
     const char alph[] = " ░▒▓█"; // 5 elements
     for (size_t i = 0; i < 28; i++) {
         for (size_t j = 0; j < 28; j++) {
@@ -182,7 +183,7 @@ static int test_idx1() {
 static int test_idx3() {
     const char *file = 
         "C:\\Users\\Luca\\Desktop\\OCR\\ai\\mnist\\data\\train-images.idx3-ubyte";
-    NETWORK_NUM **pixels;
+    float **pixels;
     size_t count;
     if (mnist_load_idx3(file, &count, &pixels) != 0) {
         printf("failed to load pixels\n");
@@ -217,21 +218,21 @@ static int test_init() {
 
     printf("printing first 10 trainning exmaples...\n");
     for (size_t i = 0; i < 10; i++) {
-        printf("label: %zi\nimage:\n", max(mnist_trainning_dataset[i].res, 10));
+        printf("label: %zi\nimage:\n", arr_max(mnist_trainning_dataset[i].res, 10));
         print_digit(mnist_trainning_dataset[i].input);
     }
 
     printf("=======================================================\n\
 printing first 10 test examples...\n");
     for (size_t i = 0; i < 10; i++) {
-        printf("label: %zi\nimages:\n", max(mnist_test_dataset[i].res, 10));
+        printf("label: %zi\nimages:\n", arr_max(mnist_test_dataset[i].res, 10));
         print_digit(mnist_test_dataset[i].input);
     }
 
     printf("=======================================================\n\
 printing last 10 test examples...\n");
     for (size_t i = mnist_test_dataset_size - 11; i < mnist_test_dataset_size; i++) {
-        printf("label: %zi\nimages:\n", max(mnist_test_dataset[i].res, 10));
+        printf("label: %zi\nimages:\n", arr_max(mnist_test_dataset[i].res, 10));
         print_digit(mnist_test_dataset[i].input);
     }
     printf("unloading data...\n");
@@ -279,7 +280,7 @@ int mnist_init_trainning(const char *labels_path, const char *images_path) {
     unsigned char *labels;
 
     size_t img_count;
-    NETWORK_NUM **images;
+    float **images;
 
     int res = mnist_load_idx1(labels_path, &lab_count, &labels);
     if (res != 0)
@@ -305,7 +306,7 @@ int mnist_init_trainning(const char *labels_path, const char *images_path) {
     mnist_trainning_dataset = malloc(lab_count * sizeof(struct network_item));
     mnist_trainning_dataset_size = lab_count;
     for (size_t i = 0; i < lab_count; i++) {
-        NETWORK_NUM *labs = calloc(10, sizeof(NETWORK_NUM));
+        float *labs = calloc(10, sizeof(float));
         labs[labels[i]] = 1.0;
         mnist_trainning_dataset[i].res = labs;
         mnist_trainning_dataset[i].input = images[i];
@@ -320,7 +321,7 @@ int mnist_init_test(const char *labels_path, const char *images_path) {
     unsigned char *labels;
 
     size_t img_count;
-    NETWORK_NUM **images;
+    float **images;
 
     int res = mnist_load_idx1(labels_path, &lab_count, &labels);
     if (res != 0)
@@ -346,7 +347,7 @@ int mnist_init_test(const char *labels_path, const char *images_path) {
     mnist_test_dataset = malloc(lab_count * sizeof(struct network_item));
     mnist_test_dataset_size = lab_count;
     for (size_t i = 0; i < lab_count; i++) {
-        NETWORK_NUM *labs = calloc(10, sizeof(NETWORK_NUM));
+        float *labs = calloc(10, sizeof(float));
         labs[labels[i]] = 1.0;
         mnist_test_dataset[i].res = labs;
         mnist_test_dataset[i].input = images[i];
@@ -390,6 +391,6 @@ int mnist_test() {
 }
 
 void mnist_print_item(const struct network_item *item) {
-    printf("label: %zu\nimages:\n", max(item->res, 10));
+    printf("label: %zu\nimages:\n", arr_max(item->res, 10));
     print_digit(item->input);
 }

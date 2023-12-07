@@ -19,20 +19,7 @@
 
 #endif
 
-static inline ssize_t dmax(double *a, size_t l) {
-    if (l == 0)
-        return -1;
-    double max = a[0];
-    ssize_t res = 0;
-    for (size_t i = 1; i < l; i++)
-        if (a[i] > max) {
-            max = a[i];
-            res = i;
-        }
-    return res;
-}
-
-static inline ssize_t max(float *a, size_t l) {
+static inline ssize_t arr_max(float *a, size_t l) {
     if (l == 0)
         return -1;
     float max = a[0];
@@ -45,20 +32,7 @@ static inline ssize_t max(float *a, size_t l) {
     return res;
 }
 
-static inline ssize_t dmin(double *a, size_t l) {
-    if (l == 0)
-        return -1;
-    double min = a[0];
-    ssize_t res = 0;
-    for (size_t i = 1; i < l; i++)
-        if (a[i] < min) {
-            min = a[i];
-            res = i;
-        }
-    return res;
-}
-
-static inline ssize_t min(float *a, size_t l) {
+static inline ssize_t arr_min(float *a, size_t l) {
     if (l == 0)
         return -1;
     float min = a[0];
@@ -71,5 +45,4 @@ static inline ssize_t min(float *a, size_t l) {
     return res;
 }
 
-#define ufmax(a, l) (size_t)max(a, l)
-#define udmax(a, l) (size_t)dmax(am l)
+#define uarr_max(a, l) (size_t)arr_max(a, l)

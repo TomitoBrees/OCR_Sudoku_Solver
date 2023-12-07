@@ -1,5 +1,8 @@
 #include "xor.h"
 #include "string.h"
+#include "stdio.h"
+
+#include "defs.h"
 
 size_t xor_dataset_size = 0;
 

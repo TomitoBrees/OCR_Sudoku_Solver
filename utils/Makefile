@@ -6,6 +6,7 @@ SRC := main.c
 OBJ := ${SRC:.c=.o}
 
 include inc.mk
+include inc.mk
 
 main: $(OBJ)
 

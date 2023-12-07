@@ -5,6 +5,7 @@
 #include "math.h"
 
 #include "sgemm.h"
+#include "defs.h"
 
 // example layers: [784, 200, 50, 10]
 void network_new(struct network *net, const size_t* layers, const size_t num_layers) {
@@ -386,7 +387,7 @@ size_t network_evaluate(const struct network *net, const struct network_item *it
     for (size_t i = 0; i < item_count; i++) {
         network_feed_forward(net, items[i].input, output);
         DARR(output, output_size);
-        if (umax(output, output_size) == umax(items[i].res, output_size))
+        if (uarr_max(output, output_size) == uarr_max(items[i].res, output_size))
             score++;
     }
     return score;

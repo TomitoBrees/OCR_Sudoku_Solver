@@ -1,6 +1,5 @@
 #pragma once
 
-#include "defs.h"
 #include "network.h"
 
 extern size_t mnist_trainning_dataset_size;

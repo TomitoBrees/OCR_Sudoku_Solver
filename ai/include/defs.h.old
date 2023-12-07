@@ -3,6 +3,8 @@
 #include "stdio.h"
 #include "string.h"
 
+#include "defs.h"
+
 #define NETWORK_NUM float
 
 #ifdef DEBUG
@@ -20,6 +22,7 @@
 
 #endif
 
+/*
 static inline ssize_t max(NETWORK_NUM *a, NETWORK_NUM l) {
     if (l == 0)
         return -1;
@@ -34,4 +37,7 @@ static inline ssize_t max(NETWORK_NUM *a, NETWORK_NUM l) {
 }
 
 #define umax(a, l) (size_t)max(a, l)
+*/
+
+#define umax(a, l) (size_t)fmax(a, l)
 

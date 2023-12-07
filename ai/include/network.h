@@ -1,7 +1,8 @@
 #pragma once
 
 #include "stdlib.h"
-#include "defs.h"
+
+#define NETWORK_NUM float
 
 struct network {
     NETWORK_NUM** weights;
