@@ -263,7 +263,7 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 
 
     double vertical_lineTreshold = 40; // Minimal gap between the Vlines
-    double horizontal_lineTreshold = 40; // Minimal gap between the Hlines
+    double horizontal_lineTreshold = 60; // Minimal gap between the Hlines
 
 
 
@@ -363,7 +363,6 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
                     {
 
                         horizontalLines[i] = currentLine;
-                        printf("%i", i);
                         break;
                     }
                     if (fabs(y1- y2) < horizontal_lineTreshold)
@@ -521,8 +520,8 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
         intersection[i] = current;
     }
 
-
-
+/*
+    
     int firstCol = 0;
     int count = 0;
     int linecount = 0;
@@ -553,7 +552,6 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     }
 
-    printf("%i\n", firstCol );
 
 
 
@@ -609,6 +607,88 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
         int topleftY = (int)intersection[x].y;
         pixels[topleftX + topleftY * width ] = SDL_MapRGB(format, 255, 0, 0);
     }
+
+
+    */
+
+
+    
+
+
+
+    int firstCol = 0;
+    int secondCol = 0;
+    int count = 0;
+    int linecount = 0;
+
+
+    for(int x = 0; x< width; x++)
+    {
+        Uint8 r, g, b;
+        SDL_GetRGB(pixels[x], format, &r, &g, &b);
+
+        if (r == 0 && b == 0 && g == 255)
+        {   
+
+            if (count == 0)
+            {
+
+                firstCol = x;
+                count ++;
+            }
+            else
+            {
+                secondCol = x;
+            }
+
+        }
+
+    }
+
+    int gridLength = secondCol - firstCol;
+
+
+
+    for(int j = 0; j < height; j++)
+    {
+        Uint8 r, g, b;
+        SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
+        if (r == 0 && b == 0 && g == 255)
+        {
+
+            for (int z = -10; z < 10; z++)
+            {
+                int found = 0;
+
+                Uint8 r, g, b;
+                Uint8 _r, _g, _b;
+                SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
+                SDL_GetRGB(pixels[firstCol + (j + z - gridLength) * width +10], format, &_r, &_g, &_b);
+
+
+
+
+                if ((r == 0 && b == 0 && g == 255) || (_r == 0 && _b == 0 && _g == 255))
+                {
+                    struct coordinates current;
+                    current.y= j;
+                    current.x = firstCol;
+                    intersection[linecount] = current;
+                    linecount ++;
+                    found = 1;
+                    
+                }
+
+                if (found == 1)
+                {
+                    break;
+                }
+            }
+            
+        }
+
+    }
+
     
     int Len = abs((int)(intersection[0].y - intersection[linecount-1].y));
     int Step = Len/9;
@@ -688,9 +768,8 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
 
 
-SDL_Surface *  cannyEdgeDetection(SDL_Surface *image)
+SDL_Surface* cannyEdgeDetection(SDL_Surface* originalImage)
 {
-
     int sobelX[3][3] = { { -1, 0, 1 }, 
                          { -2, 0, 2 }, 
                          { -1, 0, 1 } }; // Sobel Matrix for X convolution
@@ -699,33 +778,35 @@ SDL_Surface *  cannyEdgeDetection(SDL_Surface *image)
                          {  0,  0,  0 }, 
                          {  1,  2,  1 } }; // Sobel Matrix for Y convolution
 
-    int height = image->h;
-    int width = image->w;
+    int height = originalImage->h;
+    int width = originalImage->w;
 
-    Uint32 magnitudes[width*height]; // Gradient obtained with Sobel
+    Uint32* magnitudes = (Uint32*)malloc(sizeof(Uint32) * width * height);
+    Uint32* angles = (Uint32*)malloc(sizeof(Uint32) * width * height);
 
-    Uint32 angles[width*height]; // Angles used for non maxima removal
+    if (!magnitudes || !angles) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation failed\n");
+        free(magnitudes);
+        free(angles);
+        return NULL;  // or handle the error accordingly
+    }
 
-    applySobelConvolution(height, width, image->pixels, image->format,
-            sobelX, sobelY, magnitudes, angles);
-
-
-    
-    nonMaximaSuppression(height, width, image->pixels, magnitudes, angles);
-
-
-
-
-    applyThresholding(height, width, image->pixels,
-            magnitudes, image->format);
+    applySobelConvolution(height, width, originalImage->pixels, originalImage->format,
+                          sobelX, sobelY, magnitudes, angles);
 
 
 
+    nonMaximaSuppression(height, width, originalImage->pixels, magnitudes, angles);
 
-    hysteresisAnalysis(height, width, image->pixels, magnitudes);
+    applyThresholding(height, width, originalImage->pixels, magnitudes, originalImage->format);
 
-    return image;
+    hysteresisAnalysis(height, width, originalImage->pixels, magnitudes);
 
+    free(magnitudes);
+    free(angles);
+
+    return originalImage;
 }
 
 
@@ -753,7 +834,6 @@ SDL_Surface * HoughDetection(SDL_Surface* image)
 
 
 
-    SDL_SaveBMP(image, "ada.bmp");
 
     
 
@@ -889,7 +969,6 @@ SDL_Surface* automaticRotation(SDL_Surface* image)
 
     SDL_BlitSurface(original, &square, subImage, NULL);
 
-    SDL_SaveBMP(subImage, "PICTURES/rotated.bmp");
 
 
 
