@@ -7,6 +7,9 @@
 #include "stdio.h"
 
 #define DARR(a, len) printf("[DEBUG] " #a ": { "); for (size_t iii = 0; iii < len; iii++) printf("%f ", a[iii]); printf("}\n");
+#define DARR_ALL(format, a, len) printf("[DEBUG] "#a": { ");\
+    for (size_t iii = 0; iii < len; iii++) printf(format " ", a[iii]);\
+    printf("}\n");
 
 #define PRINTZ(a) printf("[DEBUG] "#a": %zu\n", a);
 #define PRINTF(a) printf("[DEBUG] "#a": %f\n", a);

@@ -36,6 +36,19 @@ main <filename> <output width> <output height> <x offset> <y offset>");
 */
 
 int main(int argc, char **argv) {
+    const char digits[9 * 9] = 
+        "123456789"
+        "........."
+        "987654321"
+        ".2.4.6.8."
+        "1.3.5.7.9"
+        "........."
+        "........."
+        "684967348"
+        "002222222";
+    if (utils_digits_to_grid("grid_test", digits) != 0)
+        err(EXIT_FAILURE, "unalbe to create grid");
+    return 0;
     if (argc != 2)
         errx(EXIT_FAILURE, "Usage: main <filename>");
 

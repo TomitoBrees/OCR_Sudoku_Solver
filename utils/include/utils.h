@@ -13,3 +13,6 @@ int invert_3x3_matrix(const float *in, float *out);
 SDL_Surface * utils_affine_trans(SDL_Surface *image,
         const float *transition_matrix,
         size_t new_width, size_t new_height);
+
+int utils_digits_to_grid(const char *filename, const char values[9 * 9]);
+

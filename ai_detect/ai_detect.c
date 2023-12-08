@@ -48,7 +48,7 @@ static SDL_Surface * center_image(SDL_Surface *img) {
     size_t x_off;
     size_t y_off;
     calc_offset(img, &x_off, &y_off);
-    PRINTD("offset = (%zi, %zi)\n", x_off, y_off);
+    //PRINTD("offset = (%zi, %zi)\n", x_off, y_off);
 
     const float x = x_off-(img->w / 2.0);
     const float y = y_off-(img->h / 2.0);
@@ -108,9 +108,13 @@ void detect_digits(const struct network *net,
 
         network_feed_forward(net, input, output);
 
-        digits[i] = (char)uarr_max(output, 10);
-        PRINTD("index %zu: (%hhi, %.3f)\n", i, digits[i], output[(size_t)digits[i]]);
+        size_t c = uarr_max(output, 10);
+        digits[i] = (char)c + '0';
+        PRINTD("index %zu: (%zu, %.3f)\n", i, c, output[c]);
+        if (output[c] < 0.7f)
+            digits[i] = '.';
         DARR(output, 10);
     }
+    DARR_ALL("%c", digits, image_len);
 }
 
