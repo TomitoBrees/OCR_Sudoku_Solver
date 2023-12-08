@@ -11,7 +11,7 @@ SDL_Surface* rotation90(SDL_Surface* surface)
     SDL_PixelFormat *format = surface->format;
     int depth = format->BitsPerPixel;
 
-    SDL_Surface* rotated = SDL_CreateRGBSurface(0, height, width, depth, 0, 0, 0, 0);
+    SDL_Surface* rotated = SDL_CreateRGBSurface(0, height, width, depth, format->Rmask, format->Gmask, format->Bmask, format->Amask);
     if (rotated == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 

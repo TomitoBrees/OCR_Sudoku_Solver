@@ -141,9 +141,8 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
 
         SDL_Surface *image_surface = app->widgets.image_surface;
 
-        //int rotation_angle = automaticRotation(image_surface);
-
-        SDL_Surface *rotated = rotation(image_surface, 1);
+        //SDL_Surface *rotated = automaticRotation(image_surface);
+        SDL_Surface *rotated = rotation(image_surface, 360 - 0);
 
         IMG_SavePNG(rotated, "returned_images/image_rotated.png");
 
@@ -183,6 +182,23 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = DETECTION;
 
+        SDL_Surface *image_surface = app->widgets.image_surface;
+
+        //SDL_Surface *detection = HoughDetection(image_surface);
+
+        IMG_SavePNG(detection, "returned_images/image_detected.png");
+
+        //Render the new image as a widget and replace the old one
+        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_detected.png", 900, 679, FALSE, NULL);
+
+        GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+        gtk_widget_set_name(new_image, "sudoku_image");
+
+        gtk_widget_destroy(app->widgets.image);
+        gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+        app->widgets.image = new_image;
+        app->widgets.image_surface = detection;
+
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
         gtk_css_provider_load_from_path(newCssProvider, "css/detection_state.css", NULL);
@@ -194,6 +210,8 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
         apply_css(app->widgets.construction_button, newCssProvider);
         apply_css(app->widgets.detection_button, newCssProvider);
         apply_css(app->widgets.ai_button, newCssProvider);
+
+        gtk_widget_show_all(app->widgets.main_window);
     }
 }
 
