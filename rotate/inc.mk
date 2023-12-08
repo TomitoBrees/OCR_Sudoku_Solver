@@ -1,3 +1,5 @@
+ifndef ROTLIBPATH
+
 ROTLIBPATH := $(shell git rev-parse --show-toplevel)/rotate
 
 CFLAGS += `pkg-config --cflags sdl2` -I${ROTLIBPATH}/include
@@ -8,5 +10,7 @@ innerSRC := ${innerSRC:%=${ROTLIBPATH}/%}
 innerOBJ := ${innerSRC:.c=.o}
 
 OBJ += ${innerOBJ}
+
+endif
 
 #${innerOBJ}: ${innerSRC}

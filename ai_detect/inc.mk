@@ -13,7 +13,7 @@ OBJ += ${innerOBJ}
 
 endif
 
-include ../ai/inc.mk
-include ../utils/inc.mk
+#include ../ai/inc.mk
+#include ../utils/inc.mk
 
 #${innerOBJ}: ${innerSRC}

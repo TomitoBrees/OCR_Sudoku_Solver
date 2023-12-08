@@ -1,3 +1,5 @@
+ifndef PREPROLIBPATH
+
 PREPROLIBPATH := $(shell git rev-parse --show-toplevel)/pre_processing
 
 CFLAGS += `pkg-config --cflags sdl2` -I${PREPROLIBPATH}/include
@@ -9,5 +11,7 @@ innerSRC := ${innerSRC:%=${PREPROLIBPATH}/%}
 innerOBJ := ${innerSRC:.c=.o}
 
 OBJ += ${innerOBJ}
+
+endif
 
 #${innerOBJ}: ${innerSRC}
