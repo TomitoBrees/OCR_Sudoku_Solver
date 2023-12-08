@@ -98,11 +98,11 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
         //Modify the image !! TEST WITH GRAYSCALE
         //Modify the surface of the original image
         SDL_Surface *image_surface = app->widgets.image_surface;
-        surface_to_grayscale(image_surface);
-        IMG_SavePNG(image_surface, "returned_images/image_grayscale.png");
+        surface_to_all(image_surface);
+        IMG_SavePNG(image_surface, "returned_images/image_pre_processed.png");
 
         //Render the new image as a widget and replace the old one
-        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_grayscale.png", 900, 679, FALSE, NULL);
+        GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_pre_processed.png", 900, 679, FALSE, NULL);
 
         GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
         gtk_widget_set_name(new_image, "sudoku_image");
@@ -140,12 +140,10 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
         app->state = ROTATION;
 
         SDL_Surface *image_surface = app->widgets.image_surface;
-        int height = image_surface->h;
-        int width = image_surface->w;
 
-        int rotation_angle = automaticRotation(height, width, image_surface);
+        //int rotation_angle = automaticRotation(image_surface);
 
-        SDL_Surface *rotated = rotation(image_surface, 360 - rotation_angle);
+        SDL_Surface *rotated = rotation(image_surface, 1);
 
         IMG_SavePNG(rotated, "returned_images/image_rotated.png");
 
@@ -315,22 +313,22 @@ void load_solver_window(char* base_path)
     //Create the app structure
     Application app =
             {
-                .state = START,
+                    .state = START,
 
-                .widgets =
-                        {
-                            .main_window = main_window,
-                            .image = image,
-                            .ai_button = ai_button,
-                            .construction_button = construction_button,
-                            .detection_button = detection_button,
-                            .image_rotation_button = image_rotation_button,
-                            .main_title = main_title,
-                            .pre_process_button = pre_process_button,
-                            .save_button = save_button,
-                            .image_box = image_box,
-                            .image_surface = image_surface
-                        },
+                    .widgets =
+                            {
+                                    .main_window = main_window,
+                                    .image = image,
+                                    .ai_button = ai_button,
+                                    .construction_button = construction_button,
+                                    .detection_button = detection_button,
+                                    .image_rotation_button = image_rotation_button,
+                                    .main_title = main_title,
+                                    .pre_process_button = pre_process_button,
+                                    .save_button = save_button,
+                                    .image_box = image_box,
+                                    .image_surface = image_surface
+                            },
             };
 
     //Connect the buttons
@@ -775,8 +773,8 @@ void load_main_window(char* base_path)
 
     Loader loader =
             {
-                .window = main_window,
-                .image_path = base_path,
+                    .window = main_window,
+                    .image_path = base_path,
             };
 
     //Connect the buttons
