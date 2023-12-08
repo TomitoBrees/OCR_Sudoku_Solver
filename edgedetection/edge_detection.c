@@ -649,13 +649,12 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
 
 
-    for(int j = 0; j < height; j++)
+    for(int j = gridLength; j < height - gridLength; j++)
     {
         Uint8 r, g, b;
         SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
         if (r == 0 && b == 0 && g == 255)
         {
-
             for (int z = -10; z < 10; z++)
             {
                 int found = 0;
@@ -684,7 +683,6 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
                     break;
                 }
             }
-            
         }
 
     }

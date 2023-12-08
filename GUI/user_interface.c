@@ -141,8 +141,7 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
 
         SDL_Surface *image_surface = app->widgets.image_surface;
 
-        //SDL_Surface *rotated = automaticRotation(image_surface);
-        SDL_Surface *rotated = rotation(image_surface, 360 - 0);
+        SDL_Surface *rotated = automaticRotation(image_surface);
 
         IMG_SavePNG(rotated, "returned_images/image_rotated.png");
 
@@ -184,7 +183,7 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
 
         SDL_Surface *image_surface = app->widgets.image_surface;
 
-        //SDL_Surface *detection = HoughDetection(image_surface);
+        SDL_Surface *detection = HoughDetection(image_surface);
 
         IMG_SavePNG(detection, "returned_images/image_detected.png");
 
