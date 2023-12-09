@@ -518,7 +518,7 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     };
 
 
-    struct coordinates intersection[10]; // 4 vertices of the grid
+    struct coordinates intersection[100]; // 4 vertices of the grid
 
     for(int i  = 0; i< 10; i++)
     {
@@ -634,6 +634,7 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     {
         Uint8 r, g, b;
         SDL_GetRGB(pixels[x], format, &r, &g, &b);
+        //pixels[x] = SDL_MapRGB(format, 255, 0, 0);
 
         if (r == 0 && b == 0 && g == 255)
         {   
@@ -655,55 +656,131 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     int gridLength = secondCol - firstCol;
 
-
-
-    for(int j = 0; j < height - firstCol - 10; j++)
+    for (int y = 0; y < height; y++)
     {
         Uint8 r, g, b;
-        SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
-        if (r == 0 && b == 0 && g == 255)
+        SDL_GetRGB(pixels[y], format, &r, &g, &b);
+        //pixels[firstCol + y *width] = SDL_MapRGB(format, 255, 0, 0);
+        //pixels[secondCol + y *width] = SDL_MapRGB(format, 255, 0, 0);
+    }
+
+
+    for(int j = 0; j < height; j++)
+    {
+
+        if (firstCol + j * width +10 < width * height)
         {
-
-            for (int z = -10; z < 10; z++)
+            Uint8 r, g, b;
+            SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
+            if (r == 0 && b == 0 && g == 255)
             {
-                int found = 0;
-
-                Uint8 r, g, b;
-                if (j< height/2)
+                if (j < height/2)
                 {
-                    SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
+                    int indexToCheck = firstCol + (j + gridLength) * width +20;
+
+
+
+                    if ((indexToCheck < width * height))
+                    {
+
+                        for(int x = 0; x <width; x++)
+                        {
+                    //pixels[x + (int)intersection[0].y * width] = SDL_MapRGB(format, 255, 0, 0);
+        }
+
+                        for (int z = -10; z < 10; z++)
+                        {
+                            int found = 0;
+
+                            Uint8 r, g, b;
+
+                            
+                            SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
+                            
+                            
+
+
+                            if ((r == 0 && b == 0 && g == 255))
+                            {
+                                struct coordinates current;
+                                current.y= j;
+                                current.x = firstCol;
+                                intersection[linecount] = current;
+                                linecount ++;
+                                found = 1;
+
+                                
+                            }
+
+                            if (found == 1)
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
-                else
+                /*else
                 {
-                    SDL_GetRGB(pixels[firstCol + (j + z -gridLength) * width +10], format, &r, &g, &b);
-                }
+                    int indexToCheck = firstCol + (j - gridLength) * width - 20;
 
 
-                if (r == 0 && b == 0 && g == 255)
-                {
-                    struct coordinates current;
-                    current.y= j;
-                    current.x = firstCol;
-                    intersection[linecount] = current;
-                    linecount ++;
-                    found = 1;
+                    printf("%i\n", indexToCheck);
+                    printf("%i\n", width * height);
+
+                    if (indexToCheck > 0)
+                    {
+
+                        for (int z = -10; z < 10; z++)
+                        {
+                            int found = 0;
+
+                            Uint8 r, g, b;
+
+                            
+                            
+                            SDL_GetRGB(pixels[firstCol + (j + z - gridLength) * width +10], format, &r, &g, &b);
+                            
+
+
+                            if ((r == 0 && b == 0 && g == 255))
+                            {
+                                struct coordinates current;
+                                current.y= j;
+                                current.x = firstCol;
+                                intersection[linecount] = current;
+                                if (linecount< 100){linecount++;}
+                                found = 1;
+
+                                
+                            }
+
+                            if (found == 1)
+                            {
+                                break;
+                            }
+                        }
+                    }
                     
                 }
+                */
 
-                if (found == 1)
-                {
-                    break;
-                }
+                
+
+                
+
+                
             }
-
-            
         }
 
     }
 
+
+    printf("test");
+
+
+
     
-    int Len = abs((int)(intersection[0].y - intersection[linecount-1].y));
-    int Step = Len/9;
+    int Step = gridLength/9;
     int topleftX = (int)intersection[0].x;
     int topleftY = (int)intersection[0].y;
 
@@ -757,16 +834,10 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
     SDL_Rect square;
     square.x = (int)intersection[0].x;
     square.y = (int)intersection[0].y;
-   
-/*
-   square.x -= Len/15;
-   square.y -= Len/15;
-*/
+ 
 
-
-
-    square.w = Len ;//+ Len/15;
-    square.h = Len ;//+ Len/15;
+    square.w = gridLength ;//+ Len/15;
+    square.h = gridLength ;//+ Len/15;
 
     SDL_Surface* subImage = SDL_CreateRGBSurface(0, square.w, square.h, original->format->BitsPerPixel, original->format->Rmask, original->format->Gmask, original->format->Bmask, original->format->Amask);
 
