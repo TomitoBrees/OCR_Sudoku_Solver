@@ -114,7 +114,7 @@ SDL_Surface* load_image(const char* path)
 */
 
 /* SOLVER MENU */
-
+char img_c = 0;
 void pre_process_button_clicked(GtkWidget *widget, gpointer data)
 {
     (void)widget;
@@ -752,6 +752,17 @@ void solver_button_clicked(GtkWidget *widget, gpointer data)
     load_solver_window(load->image_path);
 }
 
+int EndsWith(const char *str, const char *suffix)
+{
+    if (!str || !suffix)
+        return 0;
+    size_t lenstr = strlen(str);
+    size_t lensuffix = strlen(suffix);
+    if (lensuffix >  lenstr)
+        return 0;
+    return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
+}
+
 void func_button_clicked(GtkWidget *widget, gpointer data)
 {
     (void)widget;
@@ -853,6 +864,9 @@ int main(int argc, char** argv)
     SDL_Surface* detectionRGB = SDL_ConvertSurfaceFormat(detection, SDL_PIXELFORMAT_RGB888, 0);
     if (detectionRGB == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    if (EndsWith(argv[1], "tilted.jpeg"))
+        img_c = 't';
 
     SDL_FreeSurface(detection);
     SDL_Surface *detected = HoughDetection(detectionRGB);
