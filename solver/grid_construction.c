@@ -106,7 +106,7 @@ SDL_Surface* put_number(SDL_Surface *background, SDL_Surface *foreground, int x,
 
 SDL_Surface* build_grid(char *grid_path, char *sudoku_path)
 {
-    SDL_Surface* grid = load_image(sudoku_path);
+    SDL_Surface* grid = load_image_RGBA(sudoku_path);
     load_number_images();
     load_grid(grid_path);
 

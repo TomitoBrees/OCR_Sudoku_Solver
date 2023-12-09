@@ -4,7 +4,8 @@
 #include "SDL2/SDL.h"
 
 // returns NULL if the image cannot be loaded
-SDL_Surface* load_image(const char* path);
+SDL_Surface* load_image_RGB(const char* path);
+SDL_Surface* load_image_RGBA(const char* path);
 
 int invert_3x3_matrix(const float *in, float *out);
 

@@ -1,20 +1,22 @@
+#define _GNU_SOURCE
 #include <gtk/gtk.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "utils.h"
 
 #include "defs.h"
 #include "network.h"
 #include "ai_detect.h"
-#include "utils.h"
 
 #include "edge_detection.h"
 #include "pre_processing.h"
 #include "rotate.h"
 #include "solver.h"
-
-#include "defs.h"
 
 /* STRUCTURES & VARIABLES */
 
@@ -73,6 +75,26 @@ void apply_css (GtkWidget *widget, GtkCssProvider *provider)
 {
     GtkStyleContext *styleContext = gtk_widget_get_style_context(widget);
     gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
+SDL_Surface** get_cases_as_surface()
+{
+    SDL_Surface ** p = malloc(81 * sizeof(SDL_Surface*));
+
+    int i = 0;
+    int number = 1;
+    while (i < 81)
+    {
+        char *path;
+        asprintf(&path, "returned_images/cases/square number %i.bmp", number);
+        SDL_Surface *square = load_image_RGB(path);
+        p[i] = square;
+        free(path);
+        i++;
+        number++;
+    }
+
+    return p;
 }
 
 /*
@@ -188,11 +210,19 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = DETECTION;
 
-        SDL_Surface *image_surface = app->widgets.image_surface;
+        SDL_Surface* surface = IMG_Load("returned_images/image_rotated.png");
+        if (surface == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-        SDL_Surface *detection = HoughDetection(image_surface);
+        SDL_Surface* surfaceRGB = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
+        if (surfaceRGB == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-        IMG_SavePNG(detection, "returned_images/image_detected.png");
+        SDL_FreeSurface(surface);
+
+        HoughDetection(surfaceRGB);
+
+        IMG_SavePNG(surfaceRGB, "returned_images/image_detected.png");
 
         //Render the new image as a widget and replace the old one
         GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_detected.png", 900, 679, FALSE, NULL);
@@ -203,7 +233,7 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_destroy(app->widgets.image);
         gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
         app->widgets.image = new_image;
-        app->widgets.image_surface = detection;
+        app->widgets.image_surface = surfaceRGB;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -230,21 +260,19 @@ void ai_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = AI;
 
-        /*
         struct network net;
-        if (network_new_from_file(&net, AI_PATH) !=0 )
+        if (network_new_from_file(&net, "dataset_ai") !=0 )
             err(EXIT_FAILURE, "unable to load ai from file");
 
-        SDL_Surface **images;
+        SDL_Surface **images = get_cases_as_surface();
         char digits[9 * 9];
 
         detect_digits(&net, images, digits, 9 * 9);
 
-        PRINT_ALL("%c", digits, 9*9);
+        //PRINT_ALL("%c", digits, 9*9);
 
         if (utils_digits_to_grid("grids/grid_1", digits) != 0)
             err(EXIT_FAILURE, "unable to create grid file");
-        */
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -337,7 +365,7 @@ void load_solver_window(char* base_path)
     gtk_box_pack_start(GTK_BOX(image_box), image, TRUE, TRUE, 0);
 
     //Create the SDL_Surface for the image
-    SDL_Surface *image_surface = load_image(base_path);
+    SDL_Surface *image_surface = load_image_RGBA(base_path);
 
     // Apply the styles
     apply_css(main_window, cssProvider);
@@ -687,7 +715,7 @@ void load_func_window(char* base_path)
     gtk_box_pack_start(GTK_BOX(image_box), image, TRUE, TRUE, 0);
 
     //Create the SDL_Surface for the image
-    SDL_Surface *image_surface = load_image("base_path");    //CHANGED
+    SDL_Surface *image_surface = load_image_RGBA("base_path");    //CHANGED
 
     // Apply the styles
     apply_css(main_window, cssProvider);
