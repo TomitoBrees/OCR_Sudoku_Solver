@@ -336,6 +336,8 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
     }
 
 
+
+    int test = 150;
     // DETECTS THE 10 HORIZONTAL LINES FOR THE GRID
 
     for (int rhoIndex = 0; rhoIndex < max_rho; rhoIndex++)
@@ -359,6 +361,31 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 
                     double y2  = ithLine.rho * sin(ithLine._theta * M_PI / 180);
 
+                    if(fabs(y1- y2) > test)
+                    {
+                        double cosTheta = cos(theta * M_PI / 180);
+                        double sinTheta = sin(theta * M_PI / 180);
+
+                        int d = 10000;
+
+                        double x0 = rhoIndex * cosTheta;
+                        double y0 = rhoIndex * sinTheta;
+
+                        int x1 = (int)(x0 - d * (-sinTheta));
+                        y1 = (int)(y0 - d * (cosTheta));
+
+                        for (int i = 0; i <= d; i++) 
+                        {
+                            int x = x0 + i * (x1 - x0) / d;
+                            int y = y0 + i * (y1 - y0) / d;
+
+                            if (x >= 0 && x < width && y >= 0 && y < height) 
+                            {
+                                pixels[y*width + x] = SDL_MapRGB(format, 0, 255, 0);
+                            }
+                        }
+                    }
+
                     if (ithLine.rho == 190 && ithLine._theta == 190)
                     {
 
@@ -371,39 +398,20 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
                         horizontalLines[i]._theta = (horizontalLines[i]._theta + currentLine._theta)/2;
                         break;
                     }
+
                 }
 
 
 
-/*
 
 
-                double cosTheta = cos(theta * M_PI / 180);
-                double sinTheta = sin(theta * M_PI / 180);
 
-                int d = 10000;
-
-                double x0 = rhoIndex * cosTheta;
-                double y0 = rhoIndex * sinTheta;
-
-                int x1 = (int)(x0 - d * (-sinTheta));
-                y1 = (int)(y0 - d * (cosTheta));
-
-                for (int i = 0; i <= d; i++) 
-                {
-                    int x = x0 + i * (x1 - x0) / d;
-                    int y = y0 + i * (y1 - y0) / d;
-
-                    if (x >= 0 && x < width && y >= 0 && y < height) 
-                    {
-                        pixels[y*width + x] = SDL_MapRGB(format, 0, 255, 0);
-                    }
-                }
+                
 
                 
 
 
-*/
+
 
 
             }
@@ -649,25 +657,29 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
 
 
-    for(int j = gridLength; j < height - gridLength; j++)
+    for(int j = 0; j < height - firstCol - 10; j++)
     {
         Uint8 r, g, b;
         SDL_GetRGB(pixels[firstCol + j * width +10], format, &r, &g, &b);
         if (r == 0 && b == 0 && g == 255)
         {
+
             for (int z = -10; z < 10; z++)
             {
                 int found = 0;
 
                 Uint8 r, g, b;
-                Uint8 _r, _g, _b;
-                SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
-                SDL_GetRGB(pixels[firstCol + (j + z - gridLength) * width +10], format, &_r, &_g, &_b);
+                if (j< height/2)
+                {
+                    SDL_GetRGB(pixels[firstCol + (j + z +gridLength) * width +10], format, &r, &g, &b);
+                }
+                else
+                {
+                    SDL_GetRGB(pixels[firstCol + (j + z -gridLength) * width +10], format, &r, &g, &b);
+                }
 
 
-
-
-                if ((r == 0 && b == 0 && g == 255) || (_r == 0 && _b == 0 && _g == 255))
+                if (r == 0 && b == 0 && g == 255)
                 {
                     struct coordinates current;
                     current.y= j;
@@ -683,6 +695,8 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
                     break;
                 }
             }
+
+            
         }
 
     }
