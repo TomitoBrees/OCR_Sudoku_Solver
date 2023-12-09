@@ -860,7 +860,7 @@ int main(int argc, char** argv)
 
     /* AI */
     struct network net;
-    if (network_new_from_file(&net, "../ai/dataset_ai") != EXIT_SUCCESS)
+    if (network_new_from_file(&net, "../ai/dataset_all_ai") != EXIT_SUCCESS)
         err(EXIT_FAILURE, "unable to load ai from file");
 
     SDL_Surface **images = get_cases_as_surface();

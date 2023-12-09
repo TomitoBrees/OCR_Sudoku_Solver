@@ -3,6 +3,8 @@ CFLAGS = -g -Wall -Wextra -O3 $(shell pkg-config --cflags gtk+-3.0 sdl2 SDL2_ima
 LDLIBS = $(shell pkg-config --libs gtk+-3.0 sdl2 SDL2_image)
 TARGET = user_interface
 
+all: $(TARGET)
+
 SRC = user_interface.c
 OBJ := ${SRC:.c=.o}
 
