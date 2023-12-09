@@ -24,7 +24,7 @@ SDL_Surface* load_image_RGB(const char* path)
     if (surface == NULL)
         return NULL;
 
-    SDL_Surface* new_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA8888, 0);
+    SDL_Surface* new_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
     SDL_FreeSurface(surface);
     if (new_surface == NULL)
         return NULL;
