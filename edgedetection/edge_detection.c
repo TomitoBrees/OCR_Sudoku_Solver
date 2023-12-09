@@ -263,7 +263,7 @@ void houghTransform(int height, int width, Uint32* pixels,SDL_PixelFormat* forma
 
 
     double vertical_lineTreshold = 40; // Minimal gap between the Vlines
-    double horizontal_lineTreshold = 60; // Minimal gap between the Hlines
+    double horizontal_lineTreshold = 70; // Minimal gap between the Hlines
 
 
 
