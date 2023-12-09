@@ -820,7 +820,7 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
             char filename[100];
 
-            sprintf(filename, "PICTURES/square number %i.bmp", i);
+            sprintf(filename, "returned_images/cases/square number %i.bmp", i);
 
             if (SDL_SaveBMP(subImage, filename) != 0) 
             {
@@ -843,7 +843,7 @@ void findAndExtractGridSquares(SDL_Surface* original, int width, int height,
 
     SDL_BlitSurface(original, &square, subImage, NULL);
 
-    SDL_SaveBMP(subImage, "PICTURES/EXTRACTED GRID.bmp");
+    SDL_SaveBMP(subImage, "returned_images/cases/EXTRACTED GRID.bmp");
 
     
 }

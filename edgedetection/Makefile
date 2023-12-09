@@ -1,7 +1,7 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags SDL2_image`
+CFLAGS = -g -Wall -Wextra -O3 `pkg-config --cflags SDL2_image`
 LDLIBS = -lm `pkg-config --libs SDL2_image`
 
 SRC := main.c

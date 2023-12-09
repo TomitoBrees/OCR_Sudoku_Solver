@@ -119,6 +119,7 @@ SDL_Texture ** test(SDL_Renderer *renderer, SDL_Surface *image, size_t *count)
 
 int main(int argc, char** argv)
 {
+    /*
     if (argc != 2)
         errx(EXIT_FAILURE, "Usage: image-file");
 
@@ -160,7 +161,7 @@ int main(int argc, char** argv)
     free(textures);
 
     
-    
+    */
 
 
     /*SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,surface);
@@ -178,10 +179,23 @@ int main(int argc, char** argv)
     SDL_DestroyTexture(cannyTexture);*/
 
     
-
+/*
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    */
+
+    SDL_Surface* surface = IMG_Load("image_rotated.png");
+    if (surface == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* surfaceRGB = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
+    if (surfaceRGB == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_FreeSurface(surface);
+
+    HoughDetection(surfaceRGB);
 
 
 

@@ -261,7 +261,7 @@ void ai_button_clicked(GtkWidget *widget, gpointer data)
         app->state = AI;
 
         struct network net;
-        if (network_new_from_file(&net, "dataset_ai") !=0 )
+        if (network_new_from_file(&net, "../ai/dataset_ai") !=0 )
             err(EXIT_FAILURE, "unable to load ai from file");
 
         SDL_Surface **images = get_cases_as_surface();
