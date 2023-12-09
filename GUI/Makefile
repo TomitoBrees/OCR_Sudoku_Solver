@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -O3 $(shell pkg-config --cflags gtk+-3.0 sdl2 SDL2_image)
+CFLAGS = -g -Wall -Wextra -O3 $(shell pkg-config --cflags gtk+-3.0 sdl2 SDL2_image) -DDEBUG
 LDLIBS = $(shell pkg-config --libs gtk+-3.0 sdl2 SDL2_image)
 TARGET = user_interface
 
