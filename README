@@ -1,1 +1,6 @@
-TODO
+The project is working as follows:
+
+- Go to the GUI folder
+- make or make all
+- Call the program with ./user_interface <image_path> with image_path being your sudoku image.
+- You can find all your returned images in the folder GUI/returned_images.
