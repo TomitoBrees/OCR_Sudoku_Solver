@@ -124,12 +124,6 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = PRE_PROCESSING;
 
-        //Modify the image !! TEST WITH GRAYSCALE
-        //Modify the surface of the original image
-        SDL_Surface *image_surface = app->widgets.image_surface;
-        surface_to_all(image_surface);
-        IMG_SavePNG(image_surface, "returned_images/image_pre_processed.png");
-
         //Render the new image as a widget and replace the old one
         GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_pre_processed.png", 900, 679, FALSE, NULL);
 
@@ -139,7 +133,6 @@ void pre_process_button_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_destroy(app->widgets.image);
         gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
         app->widgets.image = new_image;
-        app->widgets.image_surface = image_surface;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -168,12 +161,6 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = ROTATION;
 
-        SDL_Surface *image_surface = app->widgets.image_surface;
-
-        SDL_Surface *rotated = automaticRotation(image_surface);
-
-        IMG_SavePNG(rotated, "returned_images/image_rotated.png");
-
         //Render the new image as a widget and replace the old one
         GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_rotated.png", 900, 679, FALSE, NULL);
 
@@ -183,7 +170,6 @@ void rotation_button_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_destroy(app->widgets.image);
         gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
         app->widgets.image = new_image;
-        app->widgets.image_surface = rotated;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -210,20 +196,6 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
     {
         app->state = DETECTION;
 
-        SDL_Surface* surface = IMG_Load("returned_images/image_rotated.png");
-        if (surface == NULL)
-            errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-        SDL_Surface* surfaceRGB = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
-        if (surfaceRGB == NULL)
-            errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-        SDL_FreeSurface(surface);
-
-        HoughDetection(surfaceRGB);
-
-        IMG_SavePNG(surfaceRGB, "returned_images/image_detected.png");
-
         //Render the new image as a widget and replace the old one
         GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_detected.png", 900, 679, FALSE, NULL);
 
@@ -233,7 +205,6 @@ void detection_button_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_destroy(app->widgets.image);
         gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
         app->widgets.image = new_image;
-        app->widgets.image_surface = surfaceRGB;
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -259,20 +230,6 @@ void ai_button_clicked(GtkWidget *widget, gpointer data)
     if(app->state == DETECTION)
     {
         app->state = AI;
-
-        struct network net;
-        if (network_new_from_file(&net, "../ai/dataset_ai") !=0 )
-            err(EXIT_FAILURE, "unable to load ai from file");
-
-        SDL_Surface **images = get_cases_as_surface();
-        char digits[9 * 9];
-
-        detect_digits(&net, images, digits, 9 * 9);
-
-        //PRINT_ALL("%c", digits, 9*9);
-
-        if (utils_digits_to_grid("grids/grid_1", digits) != 0)
-            err(EXIT_FAILURE, "unable to create grid file");
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();
@@ -862,6 +819,59 @@ int main(int argc, char** argv)
     //Checks the number of arguments.
     if (argc != 2)
         errx(EXIT_FAILURE, "Usage: <image-file>");
+
+
+    /* PRE PROCESSING */
+    SDL_Surface* origin = IMG_Load(argv[1]);
+    if (origin == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* originRGB = SDL_ConvertSurfaceFormat(origin, SDL_PIXELFORMAT_RGB888, 0);
+    if (originRGB == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    surface_to_all(originRGB);
+    IMG_SavePNG(originRGB, "returned_images/image_pre_processed.png");
+
+    /* ROTATION */
+    SDL_Surface* rotation = IMG_Load("returned_images/image_pre_processed.png");
+    if (rotation == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* rotationRGB = SDL_ConvertSurfaceFormat(rotation, SDL_PIXELFORMAT_RGB888, 0);
+    if (rotationRGB == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface *rotated = automaticRotation(rotationRGB);
+    IMG_SavePNG(rotated, "returned_images/image_rotated.png");
+
+    /* DETECTION*/
+    SDL_Surface* detection = IMG_Load("returned_images/image_rotated.png");
+    if (detection == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* detectionRGB = SDL_ConvertSurfaceFormat(detection, SDL_PIXELFORMAT_RGB888, 0);
+    if (detectionRGB == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_FreeSurface(detection);
+    SDL_Surface *detected = HoughDetection(detectionRGB);
+    IMG_SavePNG(detected, "returned_images/image_detected.png");
+
+    /* AI */
+    struct network net;
+    if (network_new_from_file(&net, "../ai/dataset_ai") != EXIT_SUCCESS)
+        err(EXIT_FAILURE, "unable to load ai from file");
+
+    SDL_Surface **images = get_cases_as_surface();
+    char digits[9 * 9];
+
+    detect_digits(&net, images, digits, 9 * 9);
+
+    //PRINT_ALL("%c", digits, 9*9);
+
+    if (utils_digits_to_grid("grids/grid_1", digits) != 0)
+        err(EXIT_FAILURE, "unable to create grid file");
 
     load_main_window(argv[1]);
     return 0;

@@ -39,8 +39,12 @@ static void calc_offset(SDL_Surface *img, size_t *off_x, size_t *off_y) {
                 ysum+=i;
             }
         }
-    *off_x = xsum / n;
-    *off_y = ysum / n;
+
+    if(n != 0)
+    {
+        *off_x = xsum / n;
+        *off_y = ysum / n;
+    }
     SDL_UnlockSurface(img);
 }
 
@@ -115,6 +119,6 @@ void detect_digits(const struct network *net,
             digits[i] = '.';
         DARR(output, 10);
     }
-    DARR_ALL("%c", digits, image_len);
+    //DARR_ALL("%c", digits, image_len);
 }
 

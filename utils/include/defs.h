@@ -18,6 +18,7 @@
 #else
 
 #define DARR(a, len)
+#define DARR_ALL(format, a, len)
 #define PRINTZ(a)
 #define PRINTF(a)
 #define PRINTD(...)

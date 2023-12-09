@@ -8,12 +8,13 @@
 
 #include "ai_detect.h"
 
+/*
 int main(int argc, char **argv) {
     if (argc != 2)
         errx(EXIT_FAILURE, "Usage: main <filename>");
     printf("Hello wolrd!\n");
 
-    SDL_Surface *img = load_image(argv[1]);
+    SDL_Surface *img = load_image_RGB(argv[1]);
     if (img == NULL)
         errx(EXIT_FAILURE, "failed to load image: %s", SDL_GetError());
 
@@ -28,3 +29,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+ */
