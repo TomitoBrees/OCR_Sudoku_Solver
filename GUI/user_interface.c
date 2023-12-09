@@ -480,8 +480,8 @@ void threshold_button_clicked(GtkWidget *widget, gpointer data)
 
     //Modify the surface of the original image
     SDL_Surface *image_surface = app->widgets.image_surface;
-    //surface_to_threshold_filter(image_surface);
-    //surface_to_smoothing_filter(image_surface);
+    surface_to_threshold_filter(image_surface);
+    surface_to_smoothing_filter(image_surface);
     IMG_SavePNG(image_surface, "returned_images/image_thresh.png");
 
     //Render the new image as a widget and replace the old one
@@ -549,6 +549,22 @@ void canny_button_clicked(GtkWidget *widget, gpointer data)
     (void)widget;
     Application *app = data;
 
+    //Modify the surface of the original image
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    SDL_Surface *canny = cannyEdgeDetection(image_surface);
+    IMG_SavePNG(canny, "returned_images/image_canny.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_canny.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+    app->widgets.image_surface = canny;
+
     // Load new CSS file
     GtkCssProvider *newCssProvider = gtk_css_provider_new();
     gtk_css_provider_load_from_path(newCssProvider, "css/cany_edge_state.css", NULL);
@@ -559,6 +575,8 @@ void canny_button_clicked(GtkWidget *widget, gpointer data)
     apply_css(app->widgets.median_button, newCssProvider);
     apply_css(app->widgets.threshold_button, newCssProvider);
     apply_css(app->widgets.inversion_button, newCssProvider);
+
+    gtk_widget_show(app->widgets.image);
 }
 
 
@@ -612,10 +630,10 @@ void manual_button_clicked(GtkWidget *widget, gpointer data)
     //Modify the surface of the original image
     SDL_Surface *image_surface = app->widgets.image_surface;
     SDL_Surface *rotated = rotation(image_surface, degree);
-    IMG_SavePNG(rotated, "returned_images/image_rotate.png");
+    IMG_SavePNG(rotated, "returned_images/image_rotate_func.png");
 
     //Render the new image as a widget and replace the old one
-    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_rotate.png", 900, 679, FALSE, NULL);
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_rotate_func.png", 900, 679, FALSE, NULL);
 
     GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
     gtk_widget_set_name(new_image, "sudoku_image");
@@ -626,6 +644,29 @@ void manual_button_clicked(GtkWidget *widget, gpointer data)
 
     gtk_widget_show(app->widgets.image);
 }
+
+void auto_button_clicked(GtkWidget *widget, gpointer data)
+{
+    (void)widget;
+    Application *app = data;
+
+    SDL_Surface *image_surface = app->widgets.image_surface;
+    SDL_Surface *rotated = automaticRotation(image_surface);
+    IMG_SavePNG(rotated, "returned_images/image_rotate_func.png");
+
+    //Render the new image as a widget and replace the old one
+    GdkPixbuf *buf = gdk_pixbuf_new_from_file_at_scale("returned_images/image_rotate_func.png", 900, 679, FALSE, NULL);
+
+    GtkWidget *new_image = gtk_image_new_from_pixbuf(buf);
+    gtk_widget_set_name(new_image, "sudoku_image");
+
+    gtk_widget_destroy(app->widgets.image);
+    gtk_box_pack_start(GTK_BOX(app->widgets.image_box), new_image, TRUE, TRUE, 0);
+    app->widgets.image = new_image;
+
+    gtk_widget_show(app->widgets.image);
+}
+
 
 void load_func_window(char* base_path)
 {
@@ -672,7 +713,13 @@ void load_func_window(char* base_path)
     gtk_box_pack_start(GTK_BOX(image_box), image, TRUE, TRUE, 0);
 
     //Create the SDL_Surface for the image
-    SDL_Surface *image_surface = load_image_RGBA("base_path");    //CHANGED
+    SDL_Surface* surface = IMG_Load(base_path);
+    if (surface == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    SDL_Surface* image_surface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB888, 0);
+    if (image_surface == NULL)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     // Apply the styles
     apply_css(main_window, cssProvider);
@@ -704,7 +751,6 @@ void load_func_window(char* base_path)
                                     .threshold_button = threshold_button,
                                     .inversion_button = inversion_button,
                                     .pre_process_menu = button_box,
-                                    .image_surface = image_surface
                             },
             };
 
@@ -719,6 +765,7 @@ void load_func_window(char* base_path)
     g_signal_connect(canny_button, "clicked", G_CALLBACK(canny_button_clicked), &app);
 
     g_signal_connect(manual_button, "clicked", G_CALLBACK(manual_button_clicked), &app);
+    g_signal_connect(automatic_button, "clicked", G_CALLBACK(auto_button_clicked), &app);
 
     // Show the main window
     gtk_widget_show_all(main_window);
