@@ -4,10 +4,17 @@
 #include <err.h>
 #include <string.h>
 
+#include "defs.h"
+#include "network.h"
+#include "ai_detect.h"
+#include "utils.h"
+
 #include "edge_detection.h"
 #include "pre_processing.h"
 #include "rotate.h"
 #include "solver.h"
+
+#include "defs.h"
 
 /* STRUCTURES & VARIABLES */
 
@@ -222,6 +229,22 @@ void ai_button_clicked(GtkWidget *widget, gpointer data)
     if(app->state == DETECTION)
     {
         app->state = AI;
+
+        /*
+        struct network net;
+        if (network_new_from_file(&net, AI_PATH) !=0 )
+            err(EXIT_FAILURE, "unable to load ai from file");
+
+        SDL_Surface **images;
+        char digits[9 * 9];
+
+        detect_digits(&net, images, digits, 9 * 9);
+
+        PRINT_ALL("%c", digits, 9*9);
+
+        if (utils_digits_to_grid("grids/grid_1", digits) != 0)
+            err(EXIT_FAILURE, "unable to create grid file");
+        */
 
         // Load new CSS file
         GtkCssProvider *newCssProvider = gtk_css_provider_new();

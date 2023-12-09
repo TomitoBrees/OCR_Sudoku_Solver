@@ -6,6 +6,10 @@ TARGET = user_interface
 SRC = user_interface.c
 OBJ := ${SRC:.c=.o}
 
+include ../utils/inc.mk
+include ../ai/inc.mk
+include ../ai_detect/inc.mk
+
 include ../edgedetection/inc.mk
 include ../pre_processing/inc.mk
 include ../rotate/inc.mk

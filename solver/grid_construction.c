@@ -6,11 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../utils/include/utils.h"
+
 SDL_Surface* number_images[10];
 int solved_grid[10][10];
 
 /* UTILITIES */
 
+/*
 SDL_Surface* load_image(const char* path)
 {
     SDL_Surface* surface = IMG_Load(path);
@@ -24,6 +27,7 @@ SDL_Surface* load_image(const char* path)
     SDL_FreeSurface(surface);
     return surfaceRGB;
 }
+ */
 
 void load_number_images()
 {
