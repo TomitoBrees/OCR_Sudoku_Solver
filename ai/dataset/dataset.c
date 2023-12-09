@@ -24,7 +24,7 @@ static int load_item(const char *path, struct network_item *item) {
     if (label > 9)
         return -1;
 
-    SDL_Surface *img = load_image(path);
+    SDL_Surface *img = load_image_RGB(path);
     if (img == NULL)
         return -2;
 

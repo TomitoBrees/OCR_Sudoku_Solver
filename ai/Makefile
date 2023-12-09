@@ -3,7 +3,8 @@
 CC := gcc
 CFLAGS := -Wall -Wextra -Ofast # -DDEBUG
 
-SRC := main.c dataset/dataset.c
+SRC := main.c xor/xor.c mnist/mnist.c \
+	   dataset/dataset.c dataset_all/dataset_all.c
 OBJ := ${SRC:.c=.o}
 
 include inc.mk

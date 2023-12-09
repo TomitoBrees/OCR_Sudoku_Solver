@@ -22,7 +22,7 @@ char get_char(char *sudoku, FILE *f) {
 #ifdef _WIN32
         exit(2);
 #else
-        errx(EXIT_FAILURE,
+        err(EXIT_FAILURE,
                 "unexpected End Of File (EOF) while parsing input file '%s'",
                 sudoku);
 #endif
@@ -37,7 +37,7 @@ void parse_sudoku(char *sudoku, char *res) {
 #ifdef _WIN32
         exit(3);
 #else
-        errx(EXIT_FAILURE, "unable to open input file: %s", sudoku);
+        err(EXIT_FAILURE, "unable to open input file: %s", sudoku);
 #endif
 
     for (int i = 0; i < GRID_SIZE; i++)

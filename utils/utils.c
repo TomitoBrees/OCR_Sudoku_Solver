@@ -40,9 +40,9 @@ int invert_3x3_matrix(const float *in, float *out) {
                 - in[toI(1, (i+2)%3)] * in[toI(2, (i+1)%3)]);
     }
 
-    PRINTF(det);
+    //PRINTF(det);
 
-    if (fabs(det) < 0.2)
+    if (fabs(det) < 0.001)
         return 0;
 
     for (size_t i = 0; i < 3; i++)

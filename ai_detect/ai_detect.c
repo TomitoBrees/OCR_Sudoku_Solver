@@ -5,7 +5,20 @@
 #include "defs.h"
 
 #include "SDL2/SDL.h"
-//#include "SDL2/SDL_image.h"
+
+#ifdef DEBUG
+#include "SDL2/SDL_image.h"
+#endif
+
+#define AI_THRESHOLD 0.5f
+#define RESIZE_COEF 45.0f
+
+extern char img_c;
+static float get_resize_coef() {
+    if (img_c == 't')
+        return 70.0f;
+    return 45.0f;
+}
 
 static void surface_to_array(SDL_Surface *img, float *out) {
     SDL_LockSurface(img);
@@ -21,7 +34,7 @@ static void surface_to_array(SDL_Surface *img, float *out) {
     SDL_UnlockSurface(img);
 }
 
-static void calc_offset(SDL_Surface *img, size_t *off_x, size_t *off_y) {
+static int calc_offset(SDL_Surface *img, size_t *off_x, size_t *off_y) {
     SDL_LockSurface(img);
     Uint32 *p = img->pixels;
     size_t xsum = 0;
@@ -44,14 +57,23 @@ static void calc_offset(SDL_Surface *img, size_t *off_x, size_t *off_y) {
     {
         *off_x = xsum / n;
         *off_y = ysum / n;
+    } else {
+        *off_x = 0;
+        *off_y = 0;
     }
     SDL_UnlockSurface(img);
+    return (float)n / (float)(img->w * img->h) > 0.10;
 }
 
-static SDL_Surface * center_image(SDL_Surface *img) {
+static SDL_Surface * center_image(SDL_Surface *img/*, int *ok*/) {
     size_t x_off;
     size_t y_off;
     calc_offset(img, &x_off, &y_off);
+    /*if (calc_offset(img, &x_off, &y_off) != 0) {
+        *ok = 0;
+        return NULL;
+    }
+    *ok = 1;*/
     //PRINTD("offset = (%zi, %zi)\n", x_off, y_off);
 
     const float x = x_off-(img->w / 2.0);
@@ -96,15 +118,30 @@ void detect_digits(const struct network *net,
         if (temp == NULL)
             errx(EXIT_FAILURE, "affine tranformation error");
 
-        img = scale_image(temp, 45.0f);
+        img = scale_image(temp, get_resize_coef());
         if (img == NULL)
             errx(EXIT_FAILURE, "affine transformation error");
 
-        /*
-        int e = IMG_SavePNG(img, "output.png");
+#ifdef DEBUG
+        if (i == 9) {
+        int e = IMG_SavePNG(images[i], "output_original.png");
         if (e < 0)
             errx(EXIT_FAILURE, "unable to save image: %s", SDL_GetError());
-        */
+        e = IMG_SavePNG(temp, "output_center.png");
+        if (e < 0)
+            errx(EXIT_FAILURE, "unable to save image: %s", SDL_GetError());
+        e = IMG_SavePNG(img, "output_scale.png");
+        if (e < 0)
+            errx(EXIT_FAILURE, "unable to save image: %s", SDL_GetError());
+        }
+#endif
+        size_t a;
+        size_t b;
+        if (!calc_offset(img, &a, &b)) {
+            digits[i] = '.';
+            PRINTD("index %zu: not enough pixels\n", i);
+            continue;
+        }
 
         surface_to_array(img, input);
         SDL_FreeSurface(img);
@@ -113,9 +150,15 @@ void detect_digits(const struct network *net,
         network_feed_forward(net, input, output);
 
         size_t c = uarr_max(output, 10);
+        float s_max = output[0];
+        for (size_t i = 1; i < 10; i++)
+            if (i != c && output[i]> s_max)
+                s_max = output[i];
+        PRINTF(s_max);
+
         digits[i] = (char)c + '0';
         PRINTD("index %zu: (%zu, %.3f)\n", i, c, output[c]);
-        if (output[c] < 0.7f)
+        if ( output[c] < AI_THRESHOLD || (output[c] - s_max) < 0.5f || c == 0)
             digits[i] = '.';
         DARR(output, 10);
     }

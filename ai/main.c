@@ -6,6 +6,8 @@
 #include "xor/xor.h"
 #include "dataset/dataset.h"
 
+#include "dataset_all/dataset.h"
+
 #include "defs.h"
 
 #include "network.h"
@@ -500,6 +502,35 @@ int test_SGD_font() {
     return 0;
 }
 
+int test_SGD_all() {
+    dataset_all_init();
+
+    size_t layers[] = {28 * 28, 30, 10};
+    struct network net;
+    network_new(&net, layers, sizeof(layers)/sizeof(size_t));
+    network_fill_random(&net);
+
+    const size_t epochs_num = 20 ; // 100
+    const size_t mini_batch_size = 100; // 100
+    const NETWORK_NUM eta = 3.0; // 1.0;
+
+    network_SGD(&net, data_all, data_all_size, epochs_num, mini_batch_size,
+             eta, NULL, 0);
+    //network_SGD(&net, dataset_train, dataset_train_size, epochs_num, mini_batch_size,
+    //        eta, dataset_test, dataset_test_size);
+
+    printf("score (trainning dataset): %zu\n",
+            network_evaluate(&net, data_all, data_all_size));
+    //printf("score (test dataset): %zu\n",
+    //        network_evaluate(&net, dataset_test, dataset_test_size));
+
+    if (network_write_to_file(&net, "dataset_all_ai") != 0) {
+        printf("failed to write ai\n");
+    }
+
+    return 0;
+}
+
 int main() {
     //srand(time(NULL));
     srand(0);
@@ -519,8 +550,9 @@ int main() {
     // return test_xor();
     // return test_xor_backprop();
 
-    res = test_SGD();
-    res = test_SGD_font();
+    // res = test_SGD();
+    // res = test_SGD_font();
+    res = test_SGD_all();
     // return test_SGD_xor();
 
     // res = test_ilan();
